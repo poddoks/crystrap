@@ -1,0 +1,209 @@
+<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.GlobalSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:models="clr-namespace:Bloxstrap.UI.ViewModels"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:resources="clr-namespace:Bloxstrap.Resources"
+      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
+      mc:Ignorable="d"
+      d:DesignHeight="1500" d:DesignWidth="800"
+      Title="Optimizations"
+      Scrollable="True">
+    <StackPanel Margin="0,0,14,14">
+        <TextBlock Margin="0,0,0,8" Text="Roblox-only performance tuning. These settings favor lower overhead, faster joins, and reduced input delay over visual quality." FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+        <controls:OptionControl Header="Lock optimization values" Description="Prevent Roblox from overriding these optimization settings after you apply them.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ReadOnly}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Auto-repair broken Roblox installs" Description="Before launch, verify the core Roblox player files exist and force a repair if the install is incomplete or partially broken.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding AutoRepairBrokenRobloxInstallBeforeLaunch}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Cleanup stale Roblox files before launch" Description="Delete old Crystrap-managed Roblox version folders and stale cached packages before starting Roblox. This can free space and avoid weird leftovers.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding CleanupStaleRobloxFilesBeforeLaunch}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Let Crystrap manage FastFlags" Description="Keep Roblox optimization flags under Crystrap control. Disable this only if you want to manage them manually.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding UseFastFlagManager}" />
+        </controls:OptionControl>
+
+        <TextBlock Text="Latency" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
+
+        <controls:OptionControl Header="Framerate limit" Description="Higher FPS can reduce input delay. 240 is a strong high-performance target without going fully uncapped.">
+            <ui:TextBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" Text="{Binding FramerateCap, Mode=TwoWay}" PreviewTextInput="ValidateUInt32" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Prioritize better servers" Description="Let Crystrap prefer closer or better-fitting servers to reduce join delay and improve responsiveness.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding EnableBetterMatchmaking}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Randomize among best servers" Description="Pick from multiple strong candidates instead of always targeting the same best match.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding EnableBetterMatchmakingRandomization}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Network / ping optimization" Description="Applies the recurring RakNet and packet-delay flags from your imported packs for faster response and lower delay.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding NetworkOptimized}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Force D3D11 renderer" Description="Uses the D3D11 path that showed up most consistently across your fast-flag packs. Usually the safest high-performance rendering mode on Windows.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding D3D11Optimized}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Disable VSync" Description="Removes the Roblox-side VSync cap flag for the lowest latency. This can increase tearing on some displays.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding VSyncDisabled}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Disable Roblox capture hotkeys" Description="Turns off Roblox's built-in capture path so the random screenshot and recording shortcuts are less likely to trigger.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding CaptureFeaturesDisabled}" />
+        </controls:OptionControl>
+
+        <TextBlock Text="Rendering Load" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
+
+        <controls:OptionControl Header="Graphics quality" Description="Lower values reduce GPU load and usually improve consistency on weaker hardware.">
+            <Grid Width="256">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Slider Grid.Column="0" Margin="0,0,8,0" Minimum="1" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding GraphicsQuality, Mode=TwoWay}" />
+                <Border Margin="0,-4,0,0" Grid.Column="1" Width="30" BorderBrush="{ui:ThemeResource SolidBackgroundFillColorSecondarybrush}" Background="{ui:ThemeResource SolidBackgroundFillColorSecondarybrush}" BorderThickness="1" CornerRadius="4">
+                    <TextBlock HorizontalAlignment="Center" Padding="4" VerticalAlignment="Center" TextAlignment="Center" Text="{Binding GraphicsQuality, Mode=TwoWay}" />
+                </Border>
+            </Grid>
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Texture quality" Description="Lower texture quality reduces VRAM use and streaming pressure.">
+            <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding TextureQualities.Keys, Mode=OneTime}" Text="{Binding SelectedTextureQuality, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                </ComboBox>
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Extreme strip mode" Description="Aggressively strips built-in Roblox terrain, sky, sounds, and heavier texture folders after installs and updates. This is the strongest file-level performance mode and can make the client look or sound broken on purpose.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ExtremeStripMode}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Disable terrain textures" Description="Aggressively strips Roblox terrain texture assets on apply. This does not remove every texture in every game, but it is stronger than normal texture-quality reduction.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding DisableTerrainTextures}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Degrade mip textures" Description="Skips mip levels and strips terrain material tables to force much cheaper texture usage.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding TextureDegraded}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Disable terrain decorations" Description="Turns off Roblox terrain decals and decoration detail like extra ground clutter.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding TerrainDecorationsDisabled}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Disable visual effects" Description="Bundles the most common visual-cut flags from your packs: no post-processing, weaker shadows, and lighter SSAO.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding VisualEffectsDisabled}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="MSAA" Description="Leave this at default for maximum performance. Higher values cost extra GPU time.">
+            <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding MSAALevels.Keys, Mode=OneTime}" Text="{Binding SelectedMSAALevel, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </controls:OptionControl>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding FRMQualityOverrideEnabled, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="FRM quality override" />
+                        <TextBlock FontSize="12" Text="Force Roblox toward lower internal rendering quality to cut frame time." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    </StackPanel>
+
+                    <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding FRMQualityOverrideEnabled, Mode=TwoWay}" />
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{x:Static resources:Strings.Common_LowestQuality}" Grid.Column="0" />
+                <Slider Grid.Column="1" Margin="8,0,8,0" Minimum="1" Maximum="21" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding FRMQualityOverride, Mode=TwoWay}" />
+                <TextBlock Text="{x:Static resources:Strings.Common_HighestQuality}" Grid.Column="2" />
+                <Border Margin="8,-4,0,0" Grid.Column="3" Width="30" BorderBrush="{ui:ThemeResource SolidBackgroundFillColorSecondarybrush}" Background="{ui:ThemeResource SolidBackgroundFillColorSecondarybrush}" BorderThickness="1" CornerRadius="4">
+                    <TextBlock HorizontalAlignment="Center" Padding="4" VerticalAlignment="Center" TextAlignment="Center" Text="{Binding FRMQualityOverride, Mode=TwoWay}" />
+                </Border>
+            </Grid>
+        </ui:CardExpander>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding Path=MeshQualityEnabled, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="Mesh detail" />
+                        <TextBlock FontSize="12" Text="Lower mesh detail reduces geometry cost and asset complexity." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    </StackPanel>
+
+                    <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding MeshQualityEnabled, Mode=TwoWay}" />
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <StackPanel Margin="0,8,0,0">
+                <TextBlock Padding="8" Text="{x:Static resources:Strings.Menu_FastFlags_MeshDetail_LowQualityWarning}" TextAlignment="Center" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="{x:Static resources:Strings.Common_LowestQuality}" Grid.Column="0" />
+                    <Slider Grid.Column="1" Margin="8,0,8,0" Minimum="0" Maximum="3" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding MeshQuality, Mode=TwoWay}" />
+                    <TextBlock Text="{x:Static resources:Strings.Common_HighestQuality}" Grid.Column="2" />
+                </Grid>
+            </StackPanel>
+        </ui:CardExpander>
+
+        <TextBlock Text="Interface Overhead" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
+
+        <controls:OptionControl Header="Reduced motion" Description="Cuts menu animation overhead and keeps the interface snappier.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ReducedMotion}" />
+        </controls:OptionControl>
+
+        <TextBlock Text="Engine Overhead" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
+
+        <controls:OptionControl Header="Memory optimization" Description="Enables Roblox-side low memory behavior and tighter garbage collection timing.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding MemoryOptimized}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Culling optimization" Description="Raises culling thresholds and reduces generated mesh LOD complexity for lower scene cost.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding CullingOptimized}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Parallel physics optimization" Description="Uses aggressive Roblox physics scheduling flags to cut simulation overhead.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ParallelPhysicsOptimized}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="Reduce telemetry overhead" Description="Turns off the telemetry-related debug counters and point/event reporting flags that appeared repeatedly in the imported packs.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding TelemetryReduced}" />
+        </controls:OptionControl>
+    </StackPanel>
+</ui:UiPage>
