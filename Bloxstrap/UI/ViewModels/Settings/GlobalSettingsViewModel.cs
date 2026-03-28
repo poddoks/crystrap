@@ -1,5 +1,6 @@
 using Bloxstrap.Enums.FlagPresets;
 using Bloxstrap.Enums.GBSPresets;
+using Bloxstrap.Models.SettingTasks;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 {
     public class GlobalSettingsViewModel : NotifyPropertyChangedViewModel
     {
+        private readonly NvidiaProfileTask _nvidiaProfileTask = new();
         private static readonly string[] LODLevels = { "L0", "L12", "L23", "L34" };
         private static readonly IReadOnlyDictionary<string, string> PoddoksFastFlags = new Dictionary<string, string>
         {
@@ -534,6 +536,16 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.CleanupStaleRobloxFilesBeforeLaunch;
             set => App.Settings.Prop.CleanupStaleRobloxFilesBeforeLaunch = value;
+        }
+
+        public bool NvidiaProfileTweaksEnabled
+        {
+            get => _nvidiaProfileTask.NewState;
+            set
+            {
+                _nvidiaProfileTask.NewState = value;
+                OnPropertyChanged(nameof(NvidiaProfileTweaksEnabled));
+            }
         }
 
         public bool NetworkOptimized

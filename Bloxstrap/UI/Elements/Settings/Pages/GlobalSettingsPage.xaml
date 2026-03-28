@@ -60,6 +60,10 @@
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding CaptureFeaturesDisabled}" />
         </controls:OptionControl>
 
+        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies the full bundled NVIDIA inspector profile as one package for RobloxPlayerBeta.exe. This stays manual only, requires an NVIDIA GPU plus nvidiaProfileInspector.exe, and is never turned on by Crystrap presets.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding NvidiaProfileTweaksEnabled}" />
+        </controls:OptionControl>
+
         <TextBlock Text="Rendering Load" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
 
         <controls:OptionControl Header="Graphics quality" Description="Lower values reduce GPU load and usually improve consistency on weaker hardware.">
@@ -85,7 +89,7 @@
                 </ComboBox>
         </controls:OptionControl>
 
-        <controls:OptionControl Header="Asset Trim Mode" Description="Aggressively trims built-in Roblox terrain, sky, sounds, and heavier texture folders after installs and updates. This is the strongest file-level performance mode and can make the client look or sound broken on purpose.">
+        <controls:OptionControl Header="Asset Trim Mode" Description="Aggressively trims nearly every removable Roblox content package Crystrap can restore later, including terrain, textures, models, fonts, sky, sounds, translations, lua packages, and extra assets. This is the strongest file-level performance mode and can intentionally make the client look, sound, or behave broken.">
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ExtremeStripMode}" />
         </controls:OptionControl>
 
