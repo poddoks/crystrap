@@ -11,13 +11,11 @@
 </div>
 
 > [!CAUTION]
-> The only official places to download Crystrap are this GitHub repository and [crystrap.app](https://crystrap.app).
-> Any other websites offering downloads or claiming to be us are not controlled by us *(eg. crystrap.org, crystrap.com).* Do not download from them.
+> The only official place to download Crystrap is our [Discord server](https://discord.gg/whycry).
+> There is no crystrap.app. Any other websites offering downloads or claiming to be us are not controlled by us *(eg. crystrap.org, crystrap.com).* Do not download from them.
 
 *Crystrap is a custom bootstrapper for Roblox based on Bloxstrap.*
 *It aims to provide additional features to compliment your experience.*
-
-***Found any bugs? [Submit an issue](https://github.com/poddoks/crystrap) or create a bug report in our [Discord server](https://discord.gg/whycry).***
 
 > [!NOTE]
 > Crystrap only supports **Windows 10 and above**. We do not plan on supporting other Operating Systems.
@@ -39,14 +37,14 @@
 > And many more!
 
 <div align="center">
-    <img src="https://crystrap.app/img/Showcase.webp" width="420">
+    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Showcase.webp" width="420">
 </div>
 
-[badge-repo-license]:    https://img.shields.io/github/license/crystrap/crystrap?style=flat-square
-[badge-repo-workflow]:   https://img.shields.io/github/actions/workflow/status/crystrap/crystrap/ci-release.yml?branch=main&style=flat-square&label=builds
-[badge-repo-downloads]:  https://img.shields.io/github/downloads/crystrap/crystrap/latest/total?style=flat-square&color=981bfe
-[badge-repo-latest]:     https://img.shields.io/github/v/release/crystrap/crystrap?style=flat-square&color=7a39fb
-[badge-repo-stars]:      https://img.shields.io/github/stars/crystrap/crystrap?style=flat-square&color=dd9900
+[badge-repo-license]:    https://img.shields.io/github/license/poddoks/crystrap?style=flat-square
+[badge-repo-workflow]:   https://img.shields.io/github/actions/workflow/status/poddoks/crystrap/ci-release.yml?branch=master&style=flat-square&label=builds
+[badge-repo-downloads]:  https://img.shields.io/github/downloads/poddoks/crystrap/latest/total?style=flat-square&color=981bfe
+[badge-repo-latest]:     https://img.shields.io/github/v/release/poddoks/crystrap?style=flat-square&color=7a39fb
+[badge-repo-stars]:      https://img.shields.io/github/stars/poddoks/crystrap?style=flat-square&color=dd9900
 
 [badge-discord]: https://img.shields.io/discord/1299397064165429360?style=flat-square&logo=discord&logoColor=white&logoSize=auto&label=discord&color=4d3dff
 
