@@ -35,7 +35,6 @@
 - Roblox Player and Roblox Studio support
 - Custom Crystrap game invite links
 - Built-in installer and self-updating release flow
-- Detailed server information **(Thanks to [RoValra](https://www.rovalra.com/))**
 
 > And many more!
 
