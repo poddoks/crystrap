@@ -46,11 +46,15 @@
             </StackPanel>
         </Grid>
 
-        <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
-            <ui:Anchor Margin="0,0,0,8" Content="{x:Static resources:Strings.Menu_About_DiscordServer}" Icon="Chat48" NavigateUri="https://discord.gg/whycry" />
-        </WrapPanel>
+        <Grid HorizontalAlignment="Center" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <Button HorizontalAlignment="Center" Margin="0,4,0,0" Padding="16,8" Content="{x:Static resources:Strings.Uninstaller_Title}" Command="{Binding LaunchUninstallerCommand}" />
+            <ui:Anchor Grid.Column="0" Width="210" Margin="0,0,6,0" Content="{x:Static resources:Strings.Menu_About_DiscordServer}" Icon="Chat48" NavigateUri="https://discord.gg/whycry" />
+            <ui:Button Grid.Column="1" Width="210" Margin="6,0,0,0" Content="{x:Static resources:Strings.Uninstaller_Title}" Command="{Binding LaunchUninstallerCommand}" />
+        </Grid>
 
         <StackPanel Visibility="{Binding BuildInformationVisibility, Mode=OneTime}">
             <TextBlock Text="Build Information" FontWeight="Medium" FontSize="20" Margin="0,16,0,0" />
@@ -102,15 +106,13 @@
 
             <controls:Expander Grid.Column="1" Margin="4,0,4,0" HeaderIcon="AppsAddIn28" HeaderText="{x:Static resources:Strings.Menu_About_Contributors_FeatureIdeas}" IsExpanded="True">
                 <StackPanel>
-                    <controls:MarkdownTextBlock MarkdownText="sequix" />
+                    <controls:MarkdownTextBlock MarkdownText="seqix" />
                 </StackPanel>
             </controls:Expander>
 
             <controls:Expander Grid.Column="2" Margin="4,0,0,0" HeaderIcon="Heart16" HeaderText="{x:Static resources:Strings.Menu_About_Contributors_SpecialThanks}" IsExpanded="True">
                 <StackPanel>
-                    <controls:MarkdownTextBlock MarkdownText="claude" />
-                    <controls:MarkdownTextBlock MarkdownText="gemini" />
-                    <controls:MarkdownTextBlock MarkdownText="openai" />
+                    <controls:MarkdownTextBlock MarkdownText="Type://Soul 2024" />
                 </StackPanel>
             </controls:Expander>
         </Grid>
