@@ -5,7 +5,7 @@ namespace Bloxstrap.UI.ViewModels.Installer
         // formatting is done here instead of in xaml, it's just a bit easier
         public string MainText => String.Format(
             Strings.Installer_Welcome_MainText,
-            "[github.com/returnrqt/crystrap](https://github.com/returnrqt/crystrap)"
+            "[github.com/poddoks/crystrap](https://github.com/poddoks/crystrap)"
         );
 
         public bool CanContinue { get; set; } = false;

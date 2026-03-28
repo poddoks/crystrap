@@ -1,6 +1,6 @@
 <div align="center">
-    <img src="https://github.com/crystrap/crystrap/raw/main/Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="820">
-    <img src="https://github.com/crystrap/crystrap/raw/main/Images/Bloxstrap-full-light.png#gh-light-mode-only" width="820">
+    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="820">
+    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Bloxstrap-full-light.png#gh-light-mode-only" width="820">
 
 [![License][badge-repo-license]][repo-license]
 [![Workflow][badge-repo-workflow]][repo-actions]
@@ -17,7 +17,7 @@
 *Crystrap is a custom bootstrapper for Roblox based on Bloxstrap.*
 *It aims to provide additional features to compliment your experience.*
 
-***Found any bugs? [Submit an issue](https://github.com/crystrap/crystrap/issues/new/choose) or create a bug report in our [Discord server](https://discord.gg/SRs5zb9BJd).***
+***Found any bugs? [Submit an issue](https://github.com/poddoks/crystrap) or create a bug report in our [Discord server](https://discord.gg/whycry).***
 
 > [!NOTE]
 > Crystrap only supports **Windows 10 and above**. We do not plan on supporting other Operating Systems.
@@ -50,9 +50,9 @@
 
 [badge-discord]: https://img.shields.io/discord/1299397064165429360?style=flat-square&logo=discord&logoColor=white&logoSize=auto&label=discord&color=4d3dff
 
-[repo-license]:  https://github.com/crystrap/crystrap/blob/main/LICENSE
-[repo-actions]:  https://github.com/crystrap/crystrap/actions
-[repo-releases]: https://github.com/crystrap/crystrap/releases
-[repo-latest]:   https://github.com/crystrap/crystrap/releases/latest
+[repo-license]:  https://github.com/poddoks/crystrap/blob/main/LICENSE
+[repo-actions]:  https://github.com/poddoks/crystrap/actions
+[repo-releases]: https://github.com/poddoks/crystrap/releases
+[repo-latest]:   https://github.com/poddoks/crystrap/releases/latest
 
-[discord-invite]:  https://discord.gg/SRs5zb9BJd
+[discord-invite]:  https://discord.gg/whycry

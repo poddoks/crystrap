@@ -20,9 +20,9 @@ namespace Bloxstrap
 #endif
         public const string ProjectOwner = "poddoks";
         public const string ProjectRepository = "poddoks/crystrap";
-        public const string ProjectDownloadLink = "https://github.com/poddoks/crystrap/releases";
-        public const string ProjectHelpLink = "https://github.com/bloxstraplabs/bloxstrap/wiki";
-        public const string ProjectSupportLink = "https://github.com/poddoks/crystrap/issues/new";
+        public const string ProjectDownloadLink = "https://github.com/poddoks/crystrap";
+        public const string ProjectHelpLink = "https://github.com/poddoks/crystrap";
+        public const string ProjectSupportLink = "https://github.com/poddoks/crystrap";
         public const string ProjectRemoteDataLink = "https://config.crystrap.app/v1/Data.json";
         public const string ProjectReleaseAssetName = "Crystrap.exe";
 
