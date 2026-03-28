@@ -12,7 +12,6 @@
 
 > [!CAUTION]
 > The only official place to download Crystrap is our [Discord server](https://discord.gg/whycry).
-> There is no crystrap.app. Any other websites offering downloads or claiming to be us are not controlled by us *(eg. crystrap.org, crystrap.com).* Do not download from them.
 
 *Crystrap is a custom bootstrapper for Roblox based on Bloxstrap.*
 *It aims to provide additional features to compliment your experience.*
@@ -26,13 +25,15 @@
 
 ## Feature List
 - Detailed server information **(Thanks to [RoValra](https://www.rovalra.com/))**
-- Roblox Studio support
-- Flag editor (Roblox Studio only)
-- Framerate cap unlocking
-- Global Settings page
+- Roblox Player and Roblox Studio support
+- Fast flag editor and bundled performance presets
+- Max FPS and low-delay optimization tools
+- Asset Trim Mode for aggressive Roblox file cleanup
+- Auto-repair for broken Roblox installs before launch
+- Stale Roblox file and cache cleanup
+- Global Settings and optimization controls
 - Custom Crystrap game invite links
-- Cache cleaner
-- Channel changer
+- Built-in installer and self-updating release flow
 
 > And many more!
 

@@ -85,7 +85,7 @@
                 </ComboBox>
         </controls:OptionControl>
 
-        <controls:OptionControl Header="Extreme strip mode" Description="Aggressively strips built-in Roblox terrain, sky, sounds, and heavier texture folders after installs and updates. This is the strongest file-level performance mode and can make the client look or sound broken on purpose.">
+        <controls:OptionControl Header="Asset Trim Mode" Description="Aggressively trims built-in Roblox terrain, sky, sounds, and heavier texture folders after installs and updates. This is the strongest file-level performance mode and can make the client look or sound broken on purpose.">
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ExtremeStripMode}" />
         </controls:OptionControl>
 
