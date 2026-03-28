@@ -1,6 +1,5 @@
 <div align="center">
-    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="820">
-    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Bloxstrap-full-light.png#gh-light-mode-only" width="820">
+    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Bloxstrap.png" width="180">
 
 [![License][badge-repo-license]][repo-license]
 [![Workflow][badge-repo-workflow]][repo-actions]
@@ -39,7 +38,7 @@
 > And many more!
 
 <div align="center">
-    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Showcase.webp" width="420">
+    <img src="https://github.com/poddoks/crystrap/raw/main/Images/Bloxstrap.png" width="180">
 </div>
 
 [badge-repo-license]:    https://img.shields.io/github/license/poddoks/crystrap?style=flat-square
