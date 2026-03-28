@@ -13,8 +13,8 @@
 > [!CAUTION]
 > The only official place to download Crystrap is our [Discord server](https://discord.gg/whycry).
 
-*Crystrap is a custom bootstrapper for Roblox based on Bloxstrap.*
-*It aims to provide additional features to compliment your experience.*
+*Crystrap is a competitive-performance Roblox bootstrapper based on Bloxstrap.*
+*It is built for players who care most about maximum FPS, lower delay, faster joins, and less overhead.*
 
 > [!NOTE]
 > Crystrap only supports **Windows 10 and above**. We do not plan on supporting other Operating Systems.
@@ -24,16 +24,18 @@
 **Download the latest release [here][repo-latest]**
 
 ## Feature List
-- Detailed server information **(Thanks to [RoValra](https://www.rovalra.com/))**
-- Roblox Player and Roblox Studio support
-- Fast flag editor and bundled performance presets
-- Max FPS and low-delay optimization tools
-- Asset Trim Mode for aggressive Roblox file cleanup
+- Competitive-first Roblox optimization focus
+- Aggressive fast flag presets for maximum FPS and minimum delay
+- Ultra Low Delay tuning for lower input and network overhead
+- Asset Trim Mode for stripping heavier Roblox assets after installs and updates
 - Auto-repair for broken Roblox installs before launch
 - Stale Roblox file and cache cleanup
-- Global Settings and optimization controls
+- Framerate unlock and graphics-cutting optimization controls
+- Fast flag editor for manual competitive tuning
+- Roblox Player and Roblox Studio support
 - Custom Crystrap game invite links
 - Built-in installer and self-updating release flow
+- Detailed server information **(Thanks to [RoValra](https://www.rovalra.com/))**
 
 > And many more!
 
