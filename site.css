@@ -221,6 +221,10 @@ h1 {
     background: rgba(255, 255, 255, 0.04);
 }
 
+.feature-card {
+    min-height: 154px;
+}
+
 .stat-card strong,
 .feature-card h3 {
     display: block;
@@ -236,7 +240,7 @@ h1 {
 }
 
 .section {
-    padding-top: 4px;
+    padding-top: 16px;
     position: relative;
     z-index: 1;
 }
@@ -260,6 +264,7 @@ h1 {
 
 .feature-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
     align-items: stretch;
 }
 
