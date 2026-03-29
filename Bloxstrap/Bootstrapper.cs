@@ -141,10 +141,7 @@ namespace Bloxstrap
             yield return (@"PlatformContent\pc\textures", "platform textures", true);
             yield return (@"content\sky", "sky assets", true);
             yield return (@"content\sounds", "built-in sounds", true);
-            yield return (@"ExtraContent\LuaPackages", "extra lua packages", true);
             yield return (@"ExtraContent\translations", "extra translations", true);
-            yield return (@"ExtraContent\models", "extra models", true);
-            yield return (@"ExtraContent\places", "extra place assets", true);
             yield return (@"ExtraContent\textures", "extra textures", true);
         }
 
