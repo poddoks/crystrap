@@ -8,10 +8,10 @@ namespace Bloxstrap.UI.ViewModels.Settings
     public class MainWindowViewModel : NotifyPropertyChangedViewModel
     {
         public ICommand OpenAboutCommand => new RelayCommand(OpenAbout);
-        
-        public ICommand SaveSettingsCommand => new RelayCommand(SaveSettings);
 
-        public ICommand SaveAndLaunchSettingsCommand => new RelayCommand(SaveAndLaunchSettings);
+        public IAsyncRelayCommand SaveSettingsCommand => new AsyncRelayCommand(SaveSettingsAsync);
+
+        public IAsyncRelayCommand SaveAndLaunchSettingsCommand => new AsyncRelayCommand(SaveAndLaunchSettingsAsync);
 
 
         public ICommand CloseWindowCommand => new RelayCommand(CloseWindow);
@@ -45,7 +45,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void CloseWindow() => RequestCloseWindowEvent?.Invoke(this, EventArgs.Empty);
 
-        private void SaveSettings()
+        private async Task SaveSettingsAsync()
         {
             const string LOG_IDENT = "MainWindowViewModel::SaveSettings";
 
@@ -61,7 +61,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 if (task.Changed)
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"Executing pending task '{task}'");
-                    task.Execute();
+                    await Task.Run(task.Execute);
                 }
             }
 
@@ -69,9 +69,9 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
             RequestSaveNoticeEvent?.Invoke(this, EventArgs.Empty);
         }
-        public void SaveAndLaunchSettings()
+        public async Task SaveAndLaunchSettingsAsync()
         {
-            SaveSettings();
+            await SaveSettingsAsync();
 
             if (!App.LaunchSettings.TestModeFlag.Active) // test mode already launches an instance
                 Process.Start(Paths.Application, "-player");

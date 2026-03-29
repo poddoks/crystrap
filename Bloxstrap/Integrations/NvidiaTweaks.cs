@@ -1,15 +1,15 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
-using System.Text.Json;
 using Microsoft.Win32;
 
 namespace Bloxstrap.Integrations
 {
     public static class NvidiaTweaks
     {
-        private const string LatestReleaseApiUrl = "https://api.github.com/repos/Orbmu2k/nvidiaProfileInspector/releases/latest";
+        private const string StableReleaseTag = "2.4.0.31";
         private const string ReleaseAssetName = "nvidiaProfileInspector.zip";
+        private static readonly string StableReleaseAssetUrl = $"https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/{StableReleaseTag}/{ReleaseAssetName}";
         private const string RegistryPath = @"SOFTWARE\Crystrap";
         private const string RegistryValueName = "NvidiaApplied";
 
@@ -76,6 +76,7 @@ namespace Bloxstrap.Integrations
         private static string DataDir => Paths.Base;
         private static string NipPath => Path.Combine(DataDir, "Crystrap_NoTextures.nip");
         private static string ResetPath => Path.Combine(DataDir, "Crystrap_Reset.nip");
+        public static string BundledNpiPath => Path.Combine(DataDir, "nvidiaProfileInspector.exe");
 
         public static bool IsNvidiaPresent()
         {
@@ -103,12 +104,18 @@ namespace Bloxstrap.Integrations
             }
         }
 
+        public static bool HasBundledNpi()
+        {
+            return File.Exists(BundledNpiPath);
+        }
+
         public static string? FindNpi()
         {
             string exeDir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName ?? AppContext.BaseDirectory) ?? String.Empty;
 
             string[] candidates =
             {
+                BundledNpiPath,
                 Path.Combine(exeDir, "nvidiaProfileInspector.exe"),
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "nvidiaProfileInspector.exe"),
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "NVIDIA Inspector", "nvidiaProfileInspector.exe")
@@ -127,32 +134,20 @@ namespace Bloxstrap.Integrations
                 return;
             }
 
-            using var releaseResponse = await App.HttpClient.GetAsync(LatestReleaseApiUrl);
-            releaseResponse.EnsureSuccessStatusCode();
-
-            using var releaseStream = await releaseResponse.Content.ReadAsStreamAsync();
-            using var releaseJson = await JsonDocument.ParseAsync(releaseStream);
-
-            string? downloadUrl = null;
-
-            foreach (var asset in releaseJson.RootElement.GetProperty("assets").EnumerateArray())
+            if (HasBundledNpi())
             {
-                if (!String.Equals(asset.GetProperty("name").GetString(), ReleaseAssetName, StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                downloadUrl = asset.GetProperty("browser_download_url").GetString();
-                break;
+                App.Logger.WriteLine(LOG_IDENT, $"Bundled nvidiaProfileInspector already exists at {BundledNpiPath}, skipping download");
+                return;
             }
-
-            if (String.IsNullOrEmpty(downloadUrl))
-                throw new InvalidOperationException($"Could not find {ReleaseAssetName} in the latest nvidiaProfileInspector release.");
 
             string tempZip = Path.Combine(DataDir, "nvidiaProfileInspector.latest.zip");
             string tempExtractDirectory = Path.Combine(DataDir, "nvidiaProfileInspector.latest");
 
             try
             {
-                using (var zipResponse = await App.HttpClient.GetAsync(downloadUrl))
+                App.Logger.WriteLine(LOG_IDENT, $"Downloading pinned stable nvidiaProfileInspector {StableReleaseTag} from {StableReleaseAssetUrl}");
+
+                using (var zipResponse = await App.HttpClient.GetAsync(StableReleaseAssetUrl))
                 {
                     zipResponse.EnsureSuccessStatusCode();
 
@@ -172,7 +167,7 @@ namespace Bloxstrap.Integrations
                     File.Copy(sourcePath, destinationPath, true);
                 }
 
-                App.Logger.WriteLine(LOG_IDENT, "Downloaded latest nvidiaProfileInspector into the Crystrap install directory");
+                App.Logger.WriteLine(LOG_IDENT, $"Downloaded stable nvidiaProfileInspector {StableReleaseTag} into the Crystrap install directory");
             }
             finally
             {

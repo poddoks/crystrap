@@ -208,8 +208,12 @@
 
         <TextBlock Text="NVIDIA" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
 
-        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies NVIDIA profile to remove ALL roblox textures. Required NVIDIA graphics card">
-            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding NvidiaProfileTweaksEnabled}" />
+        <controls:OptionControl Header="Install nvidiaProfileInspector" Description="Download and install nvidiaProfileInspector into Crystrap so the NVIDIA texture profile can be applied from here.">
+            <ui:Button Margin="5,0,0,0" Padding="12,6,12,6" Content="Install nvidiaProfileInspector" Command="{Binding InstallNvidiaProfileInspectorCommand}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies an aggressive NVIDIA texture LOD profile. Required NVIDIA graphics card and Crystrap-installed nvidiaProfileInspector.">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsEnabled="{Binding NvidiaProfileTweaksAvailable}" IsChecked="{Binding NvidiaProfileTweaksEnabled}" />
         </controls:OptionControl>
     </StackPanel>
 </ui:UiPage>

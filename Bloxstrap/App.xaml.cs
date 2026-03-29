@@ -449,6 +449,10 @@ namespace Bloxstrap
                 WindowsRegistry.RegisterApis(); // we want to register those early on
                                                 // so we wont have any issues with bloxshade
 
+                string startMenuShortcut = Path.Combine(Paths.WindowsStartMenu, $"{ProjectName}.lnk");
+                if (File.Exists(startMenuShortcut))
+                    Installer.RefreshInstalledShortcuts();
+
                 LaunchHandler.ProcessLaunchArgs();
             }
 

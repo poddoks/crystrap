@@ -36,6 +36,15 @@ namespace Bloxstrap
 
         private static string StartMenuShortcut => Path.Combine(Paths.WindowsStartMenu, $"{App.ProjectName}.lnk");
 
+        public static void RefreshInstalledShortcuts()
+        {
+            if (!String.IsNullOrEmpty(Paths.Application) && File.Exists(Paths.Application))
+            {
+                Shortcut.Create(Paths.Application, "", DesktopShortcut);
+                Shortcut.Create(Paths.Application, "-settings -bypassupdatecheck", StartMenuShortcut);
+            }
+        }
+
         public string BloxstrapInstallDirectory = Path.Combine(Paths.LocalAppData, "Bloxstrap"); // default directory for bloxstrap
                                                                                                  // TODO dynamically fetch from uninstall/player registry keys
         public string InstallLocation = Path.Combine(Paths.LocalAppData, App.ProjectName);
@@ -147,7 +156,7 @@ namespace Bloxstrap
                 Shortcut.Create(Paths.Application, "", DesktopShortcut);
 
             if (CreateStartMenuShortcuts)
-                Shortcut.Create(Paths.Application, "", StartMenuShortcut);
+                Shortcut.Create(Paths.Application, "-settings -bypassupdatecheck", StartMenuShortcut);
 
             if (ImportSettings)
             {
@@ -634,7 +643,7 @@ namespace Bloxstrap
                             App.Logger.WriteException(LOG_IDENT, ex);
                         }
 
-                        Shortcut.Create(Paths.Application, "", StartMenuShortcut);
+                        Shortcut.Create(Paths.Application, "-settings -bypassupdatecheck", StartMenuShortcut);
                     }
 
                     Registry.CurrentUser.DeleteSubKeyTree("Software\\Bloxstrap", false);

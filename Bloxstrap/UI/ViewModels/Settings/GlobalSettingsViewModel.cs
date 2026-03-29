@@ -1,5 +1,6 @@
 using Bloxstrap.Enums.FlagPresets;
 using Bloxstrap.Enums.GBSPresets;
+using Bloxstrap.Integrations;
 using Bloxstrap.Models.SettingTasks;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
@@ -463,10 +464,13 @@ namespace Bloxstrap.UI.ViewModels.Settings
             ["FFlagDebugDisableTelemetryEventIngest"] = "True"
         };
 
+        private bool _nvidiaProfileInstallInProgress;
+
         public ICommand ApplyAggressivePresetCommand => new RelayCommand(ApplyAggressivePreset);
         public ICommand ApplyUltraLowDelayPresetCommand => new RelayCommand(ApplyUltraLowDelayPreset);
         public ICommand ApplyPoddoksFastFlagsCommand => new RelayCommand(ApplyAbsoluteMaxFpsMinDelay);
         public ICommand ApplyAbsoluteMaxFpsMinDelayCommand => new RelayCommand(ApplyAbsoluteMaxFpsMinDelay);
+        public IAsyncRelayCommand InstallNvidiaProfileInspectorCommand => new AsyncRelayCommand(InstallNvidiaProfileInspectorAsync, () => !NvidiaProfileInstallInProgress);
 
         public bool ReadOnly
         {
@@ -536,6 +540,20 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.CleanupStaleRobloxFilesBeforeLaunch;
             set => App.Settings.Prop.CleanupStaleRobloxFilesBeforeLaunch = value;
+        }
+
+        public bool NvidiaProfileInspectorInstalled => NvidiaTweaks.HasBundledNpi();
+
+        public bool NvidiaProfileTweaksAvailable => NvidiaTweaks.IsNvidiaPresent() && NvidiaProfileInspectorInstalled;
+
+        public bool NvidiaProfileInstallInProgress
+        {
+            get => _nvidiaProfileInstallInProgress;
+            private set
+            {
+                _nvidiaProfileInstallInProgress = value;
+                OnPropertyChanged(nameof(NvidiaProfileInstallInProgress));
+            }
         }
 
         public bool NvidiaProfileTweaksEnabled
@@ -857,6 +875,49 @@ namespace Bloxstrap.UI.ViewModels.Settings
             OnPropertyChanged(nameof(FRMQualityOverride));
 
             Frontend.ShowMessageBox("Poddoks Fast Flags have been applied. Click Save to keep the most aggressive FPS and latency-focused configuration.", MessageBoxImage.Information);
+        }
+
+        private async Task InstallNvidiaProfileInspectorAsync()
+        {
+            if (!NvidiaTweaks.IsNvidiaPresent())
+            {
+                Frontend.ShowMessageBox("No NVIDIA GPU installation was detected, so Crystrap can't install or use nvidiaProfileInspector for this tweak.", MessageBoxImage.Warning);
+                return;
+            }
+
+            if (NvidiaTweaks.HasBundledNpi())
+            {
+                OnPropertyChanged(nameof(NvidiaProfileInspectorInstalled));
+                OnPropertyChanged(nameof(NvidiaProfileTweaksAvailable));
+                Frontend.ShowMessageBox($"nvidiaProfileInspector is already installed in Crystrap.\n\nPath: {NvidiaTweaks.BundledNpiPath}", MessageBoxImage.Information);
+                return;
+            }
+
+            try
+            {
+                NvidiaProfileInstallInProgress = true;
+                InstallNvidiaProfileInspectorCommand.NotifyCanExecuteChanged();
+
+                await NvidiaTweaks.EnsureLatestInstalledAsync().WaitAsync(TimeSpan.FromSeconds(20));
+
+                OnPropertyChanged(nameof(NvidiaProfileInspectorInstalled));
+                OnPropertyChanged(nameof(NvidiaProfileTweaksAvailable));
+
+                Frontend.ShowMessageBox($"nvidiaProfileInspector was installed into Crystrap.\n\nPath: {NvidiaTweaks.BundledNpiPath}", MessageBoxImage.Information);
+            }
+            catch (TimeoutException)
+            {
+                Frontend.ShowMessageBox("Crystrap timed out while installing nvidiaProfileInspector. Please try again in a moment.", MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Crystrap couldn't install nvidiaProfileInspector.\n\n{ex.Message}", MessageBoxImage.Warning);
+            }
+            finally
+            {
+                NvidiaProfileInstallInProgress = false;
+                InstallNvidiaProfileInspectorCommand.NotifyCanExecuteChanged();
+            }
         }
 
         private static bool HasFlagSet(IReadOnlyDictionary<string, string> flags)
