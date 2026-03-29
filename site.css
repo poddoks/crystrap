@@ -59,7 +59,7 @@ body::before {
 main {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 34px;
 }
 
 .hero {
@@ -69,6 +69,7 @@ main {
     align-items: start;
     min-height: auto;
     padding-top: 0;
+    margin-bottom: 4px;
 }
 
 .hero-copy,
@@ -259,6 +260,7 @@ h1 {
 
 .feature-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
 }
 
 .panel,
