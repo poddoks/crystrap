@@ -223,10 +223,10 @@ h1 {
 
 .feature-card {
     min-height: 154px;
-    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-align: left;
 }
 
 .stat-card strong,
