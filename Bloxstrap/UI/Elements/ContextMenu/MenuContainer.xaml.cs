@@ -41,9 +41,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                     GameHistoryMenuItem.Visibility = Visibility.Visible;
             }
 
-            if (_watcher.RichPresence is not null)
-                RichPresenceMenuItem.Visibility = Visibility.Visible;
-
             VersionTextBlock.Text = $"{App.ProjectName} v{App.Version}";
         }
 
@@ -101,8 +98,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
         }
 
         private void Window_Closed(object sender, EventArgs e) => App.Logger.WriteLine("MenuContainer::Window_Closed", "Context menu container closed");
-
-        private void RichPresenceMenuItem_Click(object sender, RoutedEventArgs e) => _watcher.RichPresence?.SetVisibility(((MenuItem)sender).IsChecked);
 
         private void InviteDeeplinkMenuItem_Click(object sender, RoutedEventArgs e) => Clipboard.SetDataObject(_activityWatcher?.Data.GetInviteDeeplink());
 

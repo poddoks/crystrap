@@ -1016,7 +1016,7 @@ namespace Bloxstrap
                     autoclosePids.Add(pid);
             }
 
-            if (_launchMode == LaunchMode.Player || App.Settings.Prop.EnableActivityTracking || App.LaunchSettings.TestModeFlag.Active || autoclosePids.Any())
+            if (App.LaunchSettings.TestModeFlag.Active || autoclosePids.Any())
             {
                 using var ipl = new InterProcessLock("Watcher", TimeSpan.FromSeconds(5));
 

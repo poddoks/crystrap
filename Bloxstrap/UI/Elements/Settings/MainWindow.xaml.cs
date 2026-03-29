@@ -97,7 +97,6 @@ namespace Bloxstrap.UI.Elements.Settings
 
             Type[] hiddenPages =
             {
-                typeof(IntegrationsPage),
                 typeof(AppearancePage),
                 typeof(ShortcutsPage)
             };
