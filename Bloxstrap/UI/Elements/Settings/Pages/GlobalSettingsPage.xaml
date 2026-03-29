@@ -60,10 +60,6 @@
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding CaptureFeaturesDisabled}" />
         </controls:OptionControl>
 
-        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies NVIDIA profile to remove ALL roblox textures. Required NVIDIA graphics card">
-            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding NvidiaProfileTweaksEnabled}" />
-        </controls:OptionControl>
-
         <TextBlock Text="Rendering Load" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
 
         <controls:OptionControl Header="Graphics quality" Description="Lower values reduce GPU load and usually improve consistency on weaker hardware.">
@@ -208,6 +204,12 @@
 
         <controls:OptionControl Header="Reduce telemetry overhead" Description="Turns off the telemetry-related debug counters and point/event reporting flags that appeared repeatedly in the imported packs.">
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding TelemetryReduced}" />
+        </controls:OptionControl>
+
+        <TextBlock Text="NVIDIA" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
+
+        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies NVIDIA profile to remove ALL roblox textures. Required NVIDIA graphics card">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding NvidiaProfileTweaksEnabled}" />
         </controls:OptionControl>
     </StackPanel>
 </ui:UiPage>

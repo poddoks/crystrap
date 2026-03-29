@@ -154,6 +154,9 @@ namespace Bloxstrap
             App.Settings.Load(false);
             App.State.Load(false);
             App.FastFlags.Load(false);
+            App.GlobalSettings.Load();
+            App.GlobalSettings.ApplyCrystrapInstallDefaults();
+            App.GlobalSettings.Save();
 
             if (App.IsStudioVisible)
                 WindowsRegistry.RegisterStudio();
@@ -677,6 +680,10 @@ namespace Bloxstrap
                     if (App.State.Prop.GetDeprecatedModManifest() != null)
                         App.RobloxState.Prop.ModManifest = App.State.Prop.GetDeprecatedModManifest()!;
                 }
+
+                App.GlobalSettings.Load();
+                App.GlobalSettings.ApplyCrystrapInstallDefaults();
+                App.GlobalSettings.Save();
 
                 App.Settings.Save();
                 App.FastFlags.Save();

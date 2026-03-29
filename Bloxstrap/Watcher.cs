@@ -83,6 +83,63 @@ namespace Bloxstrap
 
         public void KillRobloxProcess() => CloseProcess(_watcherData!.ProcessId, true);
 
+        private void KillAllRobloxProcessesForCurrentInstall()
+        {
+            const string LOG_IDENT = "Watcher::KillAllRobloxProcessesForCurrentInstall";
+
+            if (_watcherData is null)
+                return;
+
+            string? installDirectory = null;
+
+            try
+            {
+                using var trackedProcess = Process.GetProcessById(_watcherData.ProcessId);
+                installDirectory = Path.GetDirectoryName(trackedProcess.MainModule?.FileName ?? trackedProcess.ProcessName);
+            }
+            catch
+            {
+                // fall back to broad cleanup below
+            }
+
+            var processNames = new[] { "RobloxPlayerBeta", "RobloxCrashHandler" };
+
+            foreach (string processName in processNames)
+            {
+                foreach (var process in Process.GetProcessesByName(processName))
+                {
+                    try
+                    {
+                        string? processDirectory = null;
+
+                        try
+                        {
+                            processDirectory = Path.GetDirectoryName(process.MainModule?.FileName ?? process.ProcessName);
+                        }
+                        catch
+                        {
+                            // if path inspection fails, still allow kill for the tracked player process
+                        }
+
+                        bool sameInstall = installDirectory is null
+                            || processDirectory is null
+                            || String.Equals(processDirectory, installDirectory, StringComparison.OrdinalIgnoreCase);
+
+                        if (!sameInstall)
+                            continue;
+
+                        App.Logger.WriteLine(LOG_IDENT, $"Force killing lingering {process.ProcessName} process (pid={process.Id})");
+                        process.Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Failed to kill lingering {processName} process");
+                        App.Logger.WriteException(LOG_IDENT, ex);
+                    }
+                }
+            }
+        }
+
         public void CloseProcess(int pid, bool force = false)
         {
             const string LOG_IDENT = "Watcher::CloseProcess";
@@ -139,8 +196,8 @@ namespace Bloxstrap
 
                             if (DateTimeOffset.Now - noWindowSince >= TimeSpan.FromSeconds(5))
                             {
-                                App.Logger.WriteLine("Watcher::Run", $"Process {_watcherData.ProcessId} has no main window after close grace period, force closing it");
-                                CloseProcess(_watcherData.ProcessId, true);
+                                App.Logger.WriteLine("Watcher::Run", $"Process {_watcherData.ProcessId} has no main window after close grace period, force closing all Roblox processes for this install");
+                                KillAllRobloxProcessesForCurrentInstall();
                                 break;
                             }
                         }
@@ -156,6 +213,25 @@ namespace Bloxstrap
                 }
 
                 await Task.Delay(1000);
+            }
+
+            if (_watcherData.IsPlayer)
+            {
+                try
+                {
+                    using var process = Process.GetProcessById(_watcherData.ProcessId);
+                    process.Refresh();
+
+                    if (!process.HasExited && process.MainWindowHandle == IntPtr.Zero)
+                    {
+                        App.Logger.WriteLine("Watcher::Run", $"Process {_watcherData.ProcessId} is still headless at watcher shutdown, force closing all Roblox processes for this install");
+                        KillAllRobloxProcessesForCurrentInstall();
+                    }
+                }
+                catch
+                {
+                    // process already exited, nothing left to do
+                }
             }
 
             if (_watcherData.AutoclosePids is not null)

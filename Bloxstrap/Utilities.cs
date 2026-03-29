@@ -93,10 +93,34 @@ namespace Bloxstrap
 
         public static bool IsRobloxRunning()
         {
-            Process[] processes = GetProcessesSafe();
+            const string LOG_IDENT = "Utilities::IsRobloxRunning";
             string processName = Path.GetFileNameWithoutExtension(App.RobloxPlayerAppName);
+            TimeSpan startupGracePeriod = TimeSpan.FromSeconds(15);
 
-            return processes.Any(x => x.ProcessName == processName);
+            foreach (Process process in GetProcessesSafe().Where(x => x.ProcessName == processName))
+            {
+                try
+                {
+                    process.Refresh();
+
+                    if (process.HasExited)
+                        continue;
+
+                    // Roblox can legitimately be headless for a short time while its window is still starting up.
+                    if (process.MainWindowHandle != IntPtr.Zero || DateTime.Now - process.StartTime <= startupGracePeriod)
+                        return true;
+
+                    App.Logger.WriteLine(LOG_IDENT, $"Found orphaned headless Roblox process (pid={process.Id}), killing it");
+                    process.Kill();
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to inspect Roblox process (pid={process.Id})");
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                }
+            }
+
+            return false;
         }
 
         public static string GetRobloxVersionStr(IAppData data)

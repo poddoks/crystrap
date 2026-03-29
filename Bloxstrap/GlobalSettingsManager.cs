@@ -22,6 +22,8 @@ namespace Bloxstrap
             { "User.VREnabled", "{UserSettings}/bool[@name='VREnabled']"},
 
             // mostly accessibility
+            { "Audio.MasterVolume", "{UserSettings}/float[@name='MasterVolume']" },
+            { "Input.HapticStrength", "{UserSettings}/float[@name='HapticStrength']" },
             { "UI.Transparency", "{UserSettings}/float[@name='PreferredTransparency']" },
             { "UI.ReducedMotion", "{UserSettings}/bool[@name='ReducedMotion']" },
             { "UI.FontSize", "{UserSettings}/token[@name='PreferredTextSize']" }
@@ -52,15 +54,17 @@ namespace Bloxstrap
             return new XDocument(
                 new XElement("roblox",
                     new XAttribute("version", "4"),
-                    new XElement("Item",
+                        new XElement("Item",
                         new XAttribute("class", "UserGameSettings"),
                         new XElement("Properties",
                             new XElement("int", new XAttribute("name", "FramerateCap"), "60"),
                             new XElement("token", new XAttribute("name", "SavedQualityLevel"), "1"),
+                            new XElement("float", new XAttribute("name", "HapticStrength"), "1"),
+                            new XElement("float", new XAttribute("name", "MasterVolume"), "0.200000003"),
                             new XElement("float", new XAttribute("name", "MouseSensitivity"), "0.200000003"),
                             new XElement("bool", new XAttribute("name", "VREnabled"), "False"),
                             new XElement("float", new XAttribute("name", "PreferredTransparency"), "1"),
-                            new XElement("bool", new XAttribute("name", "ReducedMotion"), "False"),
+                            new XElement("bool", new XAttribute("name", "ReducedMotion"), "True"),
                             new XElement("token", new XAttribute("name", "PreferredTextSize"), "1")
                         )
                     )
@@ -197,6 +201,15 @@ namespace Bloxstrap
             }
 
             App.Logger.WriteLine(LOG_IDENT, "Save complete!");
+        }
+
+        public void ApplyCrystrapInstallDefaults()
+        {
+            SetPreset("Audio.MasterVolume", 0.200000003f);
+            SetPreset("Input.HapticStrength", 1f);
+            SetPreset("UI.Transparency", 1f);
+            SetPreset("UI.ReducedMotion", true);
+            SetPreset("UI.FontSize", "1");
         }
 
         private string ResolvePath(string rawPath)

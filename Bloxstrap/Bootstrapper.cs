@@ -135,14 +135,8 @@ namespace Bloxstrap
             if (!extremeStripMode)
                 yield break;
 
-            yield return (@"content\avatar", "avatar assets", true);
-            yield return (@"content\models", "built-in models", true);
-            yield return (@"content\textures", "core textures", true);
             yield return (@"PlatformContent\pc\textures", "platform textures", true);
-            yield return (@"content\sky", "sky assets", true);
-            yield return (@"content\sounds", "built-in sounds", true);
             yield return (@"ExtraContent\translations", "extra translations", true);
-            yield return (@"ExtraContent\textures", "extra textures", true);
         }
 
         // we will use this later on since we have to wait for remote data
@@ -1022,7 +1016,7 @@ namespace Bloxstrap
                     autoclosePids.Add(pid);
             }
 
-            if (App.Settings.Prop.EnableActivityTracking || App.LaunchSettings.TestModeFlag.Active || autoclosePids.Any())
+            if (_launchMode == LaunchMode.Player || App.Settings.Prop.EnableActivityTracking || App.LaunchSettings.TestModeFlag.Active || autoclosePids.Any())
             {
                 using var ipl = new InterProcessLock("Watcher", TimeSpan.FromSeconds(5));
 
@@ -1577,6 +1571,9 @@ namespace Bloxstrap
                 Directory.Delete(modFontFamiliesFolder, true);
             }
 
+            success &= await SyncPerformanceStripTargetsAsync();
+            success &= await SyncDisableAppPatchAsync();
+
             foreach (string file in Directory.GetFiles(Paths.Modifications, "*.*", SearchOption.AllDirectories))
             {
                 if (_cancelTokenSource.IsCancellationRequested)
@@ -1631,8 +1628,6 @@ namespace Bloxstrap
                     success = false;
                 }
             }
-
-            success &= await SyncPerformanceStripTargetsAsync();
 
             // the manifest is primarily here to keep track of what files have been
             // deleted from the modifications folder, so that we know when to restore the original files from the downloaded packages
@@ -1747,6 +1742,85 @@ namespace Bloxstrap
                 catch (Exception ex)
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"Failed to restore {target.Label}");
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                    success = false;
+                }
+            }
+
+            return success;
+        }
+
+        private async Task<bool> SyncDisableAppPatchAsync()
+        {
+            const string LOG_IDENT = "Bootstrapper::SyncDisableAppPatchAsync";
+            string[] relativePaths =
+            {
+                @"ExtraContent\places\Mobile.rbxl",
+                @"content\configs\UniversalAppPatchConfig\UniversalAppPatchConfig.json",
+                @"content\models\UniversalApp\UniversalApp.rbxm"
+            };
+
+            bool success = true;
+
+            foreach (string relativePath in relativePaths)
+            {
+                string versionPath = Path.Combine(_latestVersionDirectory, relativePath);
+
+                if (App.Settings.Prop.UseDisableAppPatch)
+                {
+                    try
+                    {
+                        if (File.Exists(versionPath))
+                        {
+                            Filesystem.AssertReadOnly(versionPath);
+                            File.Delete(versionPath);
+                            App.Logger.WriteLine(LOG_IDENT, $"Removed {relativePath} to stop Roblox from handing off to desktop app mode");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Failed to remove {relativePath}");
+                        App.Logger.WriteException(LOG_IDENT, ex);
+                        success = false;
+                    }
+
+                    continue;
+                }
+
+                if (File.Exists(versionPath))
+                    continue;
+
+                try
+                {
+                    var packageMapEntry = PackageDirectoryMap.SingleOrDefault(x =>
+                        !String.IsNullOrEmpty(x.Value)
+                        && relativePath.StartsWith(x.Value, StringComparison.OrdinalIgnoreCase));
+
+                    string packageName = packageMapEntry.Key;
+
+                    if (String.IsNullOrEmpty(packageName))
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"No package mapping was found for {relativePath}, skipping restore");
+                        continue;
+                    }
+
+                    var package = _versionPackageManifest.Find(x => x.Name == packageName);
+
+                    if (package is null)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Could not find package for {relativePath}, skipping restore");
+                        continue;
+                    }
+
+                    await DownloadPackage(package);
+
+                    string fileName = relativePath.Substring(packageMapEntry.Value.Length).TrimStart('\\');
+                    ExtractPackage(package, new List<string> { fileName });
+                    App.Logger.WriteLine(LOG_IDENT, $"Restored {relativePath} because DisableAppPatch is off");
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to restore {relativePath}");
                     App.Logger.WriteException(LOG_IDENT, ex);
                     success = false;
                 }
