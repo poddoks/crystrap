@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Xml.Linq;
 using Bloxstrap.AppData;
+using Bloxstrap.Integrations;
 using Microsoft.Win32;
 
 namespace Bloxstrap
@@ -85,6 +86,16 @@ namespace Bloxstrap
                     Frontend.ShowMessageBox(Strings.Installer_Install_CannotOverwrite, MessageBoxImage.Error);
                     App.Terminate(ErrorCode.ERROR_INSTALL_FAILURE);
                 }
+            }
+
+            try
+            {
+                NvidiaTweaks.EnsureLatestInstalledAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to download latest nvidiaProfileInspector during install");
+                App.Logger.WriteException(LOG_IDENT, ex);
             }
 
             using (var uninstallKey = Registry.CurrentUser.CreateSubKey(App.UninstallKey))
@@ -494,6 +505,16 @@ namespace Bloxstrap
 
                     Thread.Sleep(500);
                 }
+            }
+
+            try
+            {
+                NvidiaTweaks.EnsureLatestInstalledAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Failed to refresh latest nvidiaProfileInspector during upgrade");
+                App.Logger.WriteException(LOG_IDENT, ex);
             }
 
             using (var uninstallKey = Registry.CurrentUser.CreateSubKey(App.UninstallKey))

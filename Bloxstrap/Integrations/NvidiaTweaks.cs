@@ -1,11 +1,15 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Win32;
 
 namespace Bloxstrap.Integrations
 {
     public static class NvidiaTweaks
     {
+        private const string LatestReleaseApiUrl = "https://api.github.com/repos/Orbmu2k/nvidiaProfileInspector/releases/latest";
+        private const string ReleaseAssetName = "nvidiaProfileInspector.zip";
         private const string RegistryPath = @"SOFTWARE\Crystrap";
         private const string RegistryValueName = "NvidiaApplied";
 
@@ -111,6 +115,73 @@ namespace Bloxstrap.Integrations
             };
 
             return candidates.FirstOrDefault(File.Exists);
+        }
+
+        public static async Task EnsureLatestInstalledAsync()
+        {
+            const string LOG_IDENT = "NvidiaTweaks::EnsureLatestInstalledAsync";
+
+            if (!IsNvidiaPresent())
+            {
+                App.Logger.WriteLine(LOG_IDENT, "NVIDIA installation not detected, skipping nvidiaProfileInspector download");
+                return;
+            }
+
+            using var releaseResponse = await App.HttpClient.GetAsync(LatestReleaseApiUrl);
+            releaseResponse.EnsureSuccessStatusCode();
+
+            using var releaseStream = await releaseResponse.Content.ReadAsStreamAsync();
+            using var releaseJson = await JsonDocument.ParseAsync(releaseStream);
+
+            string? downloadUrl = null;
+
+            foreach (var asset in releaseJson.RootElement.GetProperty("assets").EnumerateArray())
+            {
+                if (!String.Equals(asset.GetProperty("name").GetString(), ReleaseAssetName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                downloadUrl = asset.GetProperty("browser_download_url").GetString();
+                break;
+            }
+
+            if (String.IsNullOrEmpty(downloadUrl))
+                throw new InvalidOperationException($"Could not find {ReleaseAssetName} in the latest nvidiaProfileInspector release.");
+
+            string tempZip = Path.Combine(DataDir, "nvidiaProfileInspector.latest.zip");
+            string tempExtractDirectory = Path.Combine(DataDir, "nvidiaProfileInspector.latest");
+
+            try
+            {
+                using (var zipResponse = await App.HttpClient.GetAsync(downloadUrl))
+                {
+                    zipResponse.EnsureSuccessStatusCode();
+
+                    await using var inputStream = await zipResponse.Content.ReadAsStreamAsync();
+                    await using var outputStream = File.Create(tempZip);
+                    await inputStream.CopyToAsync(outputStream);
+                }
+
+                if (Directory.Exists(tempExtractDirectory))
+                    Directory.Delete(tempExtractDirectory, true);
+
+                ZipFile.ExtractToDirectory(tempZip, tempExtractDirectory, true);
+
+                foreach (string sourcePath in Directory.GetFiles(tempExtractDirectory))
+                {
+                    string destinationPath = Path.Combine(DataDir, Path.GetFileName(sourcePath));
+                    File.Copy(sourcePath, destinationPath, true);
+                }
+
+                App.Logger.WriteLine(LOG_IDENT, "Downloaded latest nvidiaProfileInspector into the Crystrap install directory");
+            }
+            finally
+            {
+                if (File.Exists(tempZip))
+                    File.Delete(tempZip);
+
+                if (Directory.Exists(tempExtractDirectory))
+                    Directory.Delete(tempExtractDirectory, true);
+            }
         }
 
         public static void Apply()
