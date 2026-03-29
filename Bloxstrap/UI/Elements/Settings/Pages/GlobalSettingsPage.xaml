@@ -89,7 +89,7 @@
                 </ComboBox>
         </controls:OptionControl>
 
-        <controls:OptionControl Header="Asset Trim Mode" Description="Aggressively trims nearly every removable Roblox content package Crystrap can restore later, including terrain, textures, models, fonts, sky, sounds, translations, lua packages, and extra assets. This is the strongest file-level performance mode and can intentionally make the client look, sound, or behave broken.">
+        <controls:OptionControl Header="Asset Trim Mode" Description="Aggressively trims Roblox terrain, textures, models, sky, sounds, translations, lua packages, and extra assets after installs and updates. This is the strongest file-level performance mode and can intentionally make the client look or sound broken.">
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ExtremeStripMode}" />
         </controls:OptionControl>
 

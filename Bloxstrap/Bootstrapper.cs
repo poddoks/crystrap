@@ -136,13 +136,9 @@ namespace Bloxstrap
                 yield break;
 
             yield return (@"content\avatar", "avatar assets", true);
-            yield return (@"content\configs", "client config assets", true);
-            yield return (@"content\fonts", "built-in fonts", true);
             yield return (@"content\models", "built-in models", true);
             yield return (@"content\textures", "core textures", true);
             yield return (@"PlatformContent\pc\textures", "platform textures", true);
-            yield return (@"PlatformContent\pc\fonts", "platform fonts", true);
-            yield return (@"PlatformContent\pc\shared_compression_dictionaries", "platform compression dictionaries", true);
             yield return (@"content\sky", "sky assets", true);
             yield return (@"content\sounds", "built-in sounds", true);
             yield return (@"ExtraContent\LuaPackages", "extra lua packages", true);
