@@ -59,7 +59,7 @@ body::before {
 main {
     display: flex;
     flex-direction: column;
-    gap: 34px;
+    gap: 44px;
 }
 
 .hero {
@@ -69,7 +69,7 @@ main {
     align-items: start;
     min-height: auto;
     padding-top: 0;
-    margin-bottom: 4px;
+    margin-bottom: 10px;
 }
 
 .hero-copy,
@@ -310,7 +310,7 @@ h1 {
     .hero {
         min-height: auto;
         padding-top: 0;
-        margin-bottom: 0;
+        margin-bottom: 8px;
     }
 
     .hero-copy {

@@ -60,7 +60,7 @@
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding CaptureFeaturesDisabled}" />
         </controls:OptionControl>
 
-        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies the full bundled NVIDIA inspector profile as one package for RobloxPlayerBeta.exe. This stays manual only.">
+        <controls:OptionControl Header="NVIDIA Profile Inspector tweak" Description="Applies NVIDIA profile to remove ALL roblox textures. Required NVIDIA graphics card">
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding NvidiaProfileTweaksEnabled}" />
         </controls:OptionControl>
 
