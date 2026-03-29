@@ -51,7 +51,7 @@ body::before {
     position: relative;
     width: min(1360px, calc(100% - 72px));
     margin: 0 auto;
-    padding: 36px 0 40px;
+    padding: 28px 0 20px;
     display: flex;
     flex-direction: column;
 }
@@ -69,7 +69,7 @@ main {
     align-items: start;
     min-height: auto;
     padding-top: 0;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
 }
 
 .hero-copy,
@@ -240,7 +240,7 @@ h1 {
 }
 
 .section {
-    padding-top: 16px;
+    padding-top: 8px;
     position: relative;
     z-index: 1;
 }
