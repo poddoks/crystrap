@@ -51,19 +51,15 @@ body::before {
     position: relative;
     width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 12px 0 24px;
-    min-height: 100vh;
+    padding: 24px 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 main {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    flex: 1;
-    justify-content: flex-end;
+    gap: 24px;
 }
 
 .hero {
@@ -72,8 +68,7 @@ main {
     gap: 20px;
     align-items: start;
     min-height: auto;
-    margin-bottom: 0;
-    padding-top: 8px;
+    padding-top: 0;
 }
 
 .hero-copy,
@@ -324,9 +319,7 @@ h1 {
 @media (max-width: 640px) {
     .page-shell {
         width: min(100% - 20px, 1180px);
-        padding-top: 12px;
-        padding-bottom: 18px;
-        min-height: auto;
+        padding: 20px 0;
     }
 
     .hero-card,
