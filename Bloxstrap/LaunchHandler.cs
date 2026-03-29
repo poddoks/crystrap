@@ -45,7 +45,7 @@ namespace Bloxstrap
         private static bool InstallRobloxThenOpenSettingsIfNeeded()
         {
             var playerData = new RobloxPlayerData();
-            bool playerInstalled = !String.IsNullOrEmpty(App.RobloxState.Prop.Player.VersionGuid) && File.Exists(playerData.ExecutablePath);
+            bool playerInstalled = File.Exists(playerData.ExecutablePath);
 
             if (playerInstalled)
                 return false;
