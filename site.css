@@ -49,22 +49,23 @@ body::before {
     position: relative;
     width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 32px 0 72px;
+    padding: 12px 0 24px;
 }
 
 main {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
 }
 
 .hero {
     display: grid;
     grid-template-columns: 1.2fr 0.9fr;
-    gap: 28px;
-    align-items: center;
-    min-height: calc(100vh - 120px);
-    margin-bottom: 6px;
+    gap: 20px;
+    align-items: start;
+    min-height: auto;
+    margin-bottom: 0;
+    padding-top: 8px;
 }
 
 .hero-copy,
@@ -77,7 +78,7 @@ main {
 }
 
 .hero-copy {
-    padding: 36px 10px 36px 0;
+    padding: 8px 8px 0 0;
 }
 
 .eyebrow {
@@ -97,18 +98,18 @@ p {
 }
 
 h1 {
-    font-size: clamp(2.6rem, 5vw, 5rem);
+    font-size: clamp(2.4rem, 4.6vw, 4.4rem);
     line-height: 0.98;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
     max-width: 12ch;
 }
 
 .lede {
     max-width: 62ch;
     color: var(--muted);
-    font-size: 1.08rem;
-    line-height: 1.7;
-    margin-bottom: 28px;
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 20px;
 }
 
 .hero-actions {
@@ -149,9 +150,9 @@ h1 {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin-top: 16px;
     color: var(--muted);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
 }
 
 .hero-meta span,
@@ -164,7 +165,7 @@ h1 {
 
 .hero-card {
     position: relative;
-    padding: 30px;
+    padding: 22px;
     border: 1px solid var(--line);
     border-radius: var(--radius-xl);
     background: linear-gradient(180deg, rgba(20, 31, 44, 0.95), rgba(10, 15, 22, 0.88));
@@ -186,22 +187,22 @@ h1 {
 .logo-wrap {
     display: grid;
     place-items: center;
-    margin-bottom: 24px;
-    padding: 24px;
+    margin-bottom: 16px;
+    padding: 18px;
     border-radius: 24px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
     border: 1px solid var(--line);
 }
 
 .logo-wrap img {
-    width: min(200px, 58%);
+    width: min(156px, 52%);
     filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.34));
 }
 
 .stat-grid,
 .feature-grid {
     display: grid;
-    gap: 14px;
+    gap: 12px;
 }
 
 .stat-grid {
@@ -210,7 +211,7 @@ h1 {
 
 .stat-card,
 .feature-card {
-    padding: 18px;
+    padding: 15px;
     border: 1px solid var(--line);
     border-radius: var(--radius-md);
     background: rgba(255, 255, 255, 0.04);
@@ -227,7 +228,7 @@ h1 {
 .feature-card p,
 .cta-card p {
     color: var(--muted);
-    line-height: 1.65;
+    line-height: 1.5;
 }
 
 .section {
@@ -303,7 +304,7 @@ h1 {
 
     .hero {
         min-height: auto;
-        padding-top: 10px;
+        padding-top: 0;
         margin-bottom: 0;
     }
 
@@ -315,7 +316,8 @@ h1 {
 @media (max-width: 640px) {
     .page-shell {
         width: min(100% - 20px, 1180px);
-        padding-top: 18px;
+        padding-top: 12px;
+        padding-bottom: 18px;
     }
 
     .hero-card,
