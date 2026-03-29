@@ -11,6 +11,26 @@ namespace Bloxstrap
 {
     public static class LaunchHandler
     {
+        private static bool TryUpdateBeforeMenuLaunch()
+        {
+            const string LOG_IDENT = "LaunchHandler::TryUpdateBeforeMenuLaunch";
+
+            if (App.LaunchSettings.BypassUpdateCheck || App.LaunchSettings.UpgradeFlag.Active || !App.Settings.Prop.CheckForUpdates)
+                return false;
+
+            App.Logger.WriteLine(LOG_IDENT, "Checking for updates before opening the menu");
+
+            bool updateStarted = App.CheckForUpdatesAsync().GetAwaiter().GetResult();
+
+            if (updateStarted)
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Update started, terminating current process");
+                App.Terminate();
+            }
+
+            return false;
+        }
+
         private static void RefreshPostInstallState()
         {
             App.Settings.Load();
@@ -87,6 +107,7 @@ namespace Bloxstrap
             }
             else if (App.LaunchSettings.MenuFlag.Active)
             {
+                TryUpdateBeforeMenuLaunch();
                 App.Logger.WriteLine(LOG_IDENT, "Opening settings");
                 LaunchSettings();
             }
@@ -117,6 +138,7 @@ namespace Bloxstrap
             }
             else if (!App.LaunchSettings.QuietFlag.Active)
             {
+                TryUpdateBeforeMenuLaunch();
                 App.Logger.WriteLine(LOG_IDENT, "Opening menu");
                 LaunchMenu();
             }

@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Shell;
 using System.Windows.Threading;
 
+using Bloxstrap.Enums;
+using Bloxstrap.UI.Elements.Bootstrapper.Base;
 using Microsoft.Win32;
 
 namespace Bloxstrap
@@ -170,6 +172,102 @@ namespace Bloxstrap
             return assets.FirstOrDefault(x => String.Equals(x.Name, ProjectReleaseAssetName, StringComparison.OrdinalIgnoreCase))
                 ?? assets.FirstOrDefault(x => x.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                 ?? assets.FirstOrDefault();
+        }
+
+        public static async Task<bool> CheckForUpdatesAsync(LaunchMode launchMode = LaunchMode.None, IBootstrapperDialog? dialog = null)
+        {
+            const string LOG_IDENT = "App::CheckForUpdatesAsync";
+
+            if (LaunchSettings.BypassUpdateCheck || LaunchSettings.UpgradeFlag.Active || !Settings.Prop.CheckForUpdates)
+                return false;
+
+            // don't update if there's another instance running (likely running in the background)
+            if (Process.GetProcessesByName(ProjectName).Length > 1)
+            {
+                Logger.WriteLine(LOG_IDENT, $"More than one {ProjectName} instance running, aborting update check");
+                return false;
+            }
+
+            Logger.WriteLine(LOG_IDENT, "Checking for updates...");
+
+            var releaseInfo = await GetLatestRelease();
+
+            if (releaseInfo is null)
+                return false;
+
+            var versionComparison = Utilities.CompareVersions(Version, releaseInfo.TagName);
+
+            if (IsProductionBuild && versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
+            {
+                Logger.WriteLine(LOG_IDENT, "No updates found");
+                return false;
+            }
+
+            if (dialog is not null)
+                dialog.CancelEnabled = false;
+
+            string version = releaseInfo.TagName;
+
+            try
+            {
+                var asset = GetLatestReleaseAsset(releaseInfo);
+
+                if (asset is null)
+                    throw new InvalidOperationException("Latest release does not contain a downloadable asset.");
+
+                string downloadLocation = Path.Combine(Paths.TempUpdates, asset.Name);
+
+                Directory.CreateDirectory(Paths.TempUpdates);
+
+                Logger.WriteLine(LOG_IDENT, $"Downloading {releaseInfo.TagName}...");
+
+                if (!File.Exists(downloadLocation))
+                {
+                    var response = await HttpClient.GetAsync(asset.BrowserDownloadUrl);
+
+                    await using var fileStream = new FileStream(downloadLocation, FileMode.OpenOrCreate, FileAccess.Write);
+                    await response.Content.CopyToAsync(fileStream);
+                }
+
+                Logger.WriteLine(LOG_IDENT, $"Starting {version}...");
+
+                ProcessStartInfo startInfo = new()
+                {
+                    FileName = downloadLocation,
+                };
+
+                startInfo.ArgumentList.Add("-upgrade");
+
+                foreach (string arg in LaunchSettings.Args)
+                    startInfo.ArgumentList.Add(arg);
+
+                if (launchMode == LaunchMode.Player && !startInfo.ArgumentList.Contains("-player"))
+                    startInfo.ArgumentList.Add("-player");
+                else if (launchMode == LaunchMode.Studio && !startInfo.ArgumentList.Contains("-studio"))
+                    startInfo.ArgumentList.Add("-studio");
+
+                Settings.Save();
+
+                new InterProcessLock("AutoUpdater");
+
+                Process.Start(startInfo);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine(LOG_IDENT, "An exception occurred when running the auto-updater");
+                Logger.WriteException(LOG_IDENT, ex);
+
+                Frontend.ShowMessageBox(
+                    string.Format(Strings.Bootstrapper_AutoUpdateFailed, version),
+                    MessageBoxImage.Information
+                );
+
+                Utilities.ShellExecute(ProjectDownloadLink);
+            }
+
+            return false;
         }
 
         public static void SendLog()
