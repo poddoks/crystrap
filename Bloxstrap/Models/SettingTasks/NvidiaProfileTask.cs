@@ -23,6 +23,7 @@ namespace Bloxstrap.Models.SettingTasks
                         return;
                     }
 
+                    NvidiaTweaks.EnsureLatestInstalledAsync().GetAwaiter().GetResult();
                     NvidiaTweaks.Apply();
                 }
                 else

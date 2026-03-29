@@ -42,18 +42,54 @@ namespace Bloxstrap
             App.GlobalSettings.previousReadOnlyState = false;
         }
 
+        private static void StartInstalledCrystrap(string arguments, string logIdent)
+        {
+            App.Logger.WriteLine(logIdent, $"Starting installed Crystrap from {Paths.Application} with arguments '{arguments}'");
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = Paths.Application,
+                Arguments = arguments,
+                WorkingDirectory = Paths.Base,
+                UseShellExecute = true
+            });
+        }
+
         private static bool InstallRobloxThenOpenSettingsIfNeeded()
         {
+            const string LOG_IDENT = "LaunchHandler::InstallRobloxThenOpenSettingsIfNeeded";
+
             var playerData = new RobloxPlayerData();
             bool playerInstalled = File.Exists(playerData.ExecutablePath);
+
+            App.Logger.WriteLine(LOG_IDENT, $"Roblox player present: {playerInstalled} ({playerData.ExecutablePath})");
 
             if (playerInstalled)
                 return false;
 
-            App.Logger.WriteLine("LaunchHandler::InstallRobloxThenOpenSettingsIfNeeded", "Roblox player is not installed yet, installing it before opening settings");
+            App.Logger.WriteLine(LOG_IDENT, "Roblox player is not installed yet, installing it before opening settings");
             App.LaunchSettings.NoLaunchFlag.Active = true;
             LaunchRoblox(LaunchMode.Player, true);
             return true;
+        }
+
+        private static void CompleteQuietInstall()
+        {
+            const string LOG_IDENT = "LaunchHandler::CompleteQuietInstall";
+
+            App.Logger.WriteLine(LOG_IDENT, "Installation finished, refreshing state before post-install handoff");
+            RefreshPostInstallState();
+
+            if (InstallRobloxThenOpenSettingsIfNeeded())
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Roblox install bootstrapper was started, current installer process will exit after bootstrapper handoff");
+                return;
+            }
+
+            App.Logger.WriteLine(LOG_IDENT, "Roblox is already installed, opening installed Crystrap settings");
+            StartInstalledCrystrap("-settings", LOG_IDENT);
+            App.Logger.WriteLine(LOG_IDENT, "Installed Crystrap launched successfully, terminating installer process");
+            App.Terminate();
         }
 
         public static void ProcessNextAction(NextAction action, bool isUnfinishedInstall = false)
@@ -177,13 +213,7 @@ namespace Bloxstrap
                 installer.DoInstall();
 
                 interlock.Dispose();
-
-                RefreshPostInstallState();
-
-                if (InstallRobloxThenOpenSettingsIfNeeded())
-                    return;
-
-                ProcessLaunchArgs();
+                CompleteQuietInstall();
             }
             else
             {
@@ -346,13 +376,7 @@ namespace Bloxstrap
                 else if (openSettingsOnFinish)
                 {
                     App.Logger.WriteLine(LOG_IDENT, "Opening settings after Roblox bootstrapper finished");
-
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = Paths.Application,
-                        Arguments = "-settings",
-                        UseShellExecute = true
-                    });
+                    StartInstalledCrystrap("-settings", LOG_IDENT);
                 }
 
                 App.Terminate();

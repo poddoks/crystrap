@@ -9,6 +9,8 @@ namespace Bloxstrap
 {
     internal class Installer
     {
+        private static readonly TimeSpan NvidiaDownloadWaitTimeout = TimeSpan.FromSeconds(5);
+
         private static readonly HashSet<string> RuntimeCopyExcludedNames = new(StringComparer.OrdinalIgnoreCase)
         {
             "Backups",
@@ -59,6 +61,29 @@ namespace Bloxstrap
             "Settings.json"
         };
 
+        private static void TryRefreshBundledNvidiaTools(string logIdent)
+        {
+            if (!NvidiaTweaks.IsNvidiaPresent())
+            {
+                App.Logger.WriteLine(logIdent, "NVIDIA installation not detected, skipping bundled nvidiaProfileInspector refresh");
+                return;
+            }
+
+            Task refreshTask = Task.Run(() => NvidiaTweaks.EnsureLatestInstalledAsync());
+
+            if (!refreshTask.Wait(NvidiaDownloadWaitTimeout))
+            {
+                App.Logger.WriteLine(logIdent, $"Timed out refreshing bundled nvidiaProfileInspector after {NvidiaDownloadWaitTimeout.TotalSeconds} seconds; continuing without blocking install");
+                return;
+            }
+
+            if (refreshTask.IsFaulted && refreshTask.Exception is not null)
+            {
+                App.Logger.WriteLine(logIdent, "Failed to refresh bundled nvidiaProfileInspector");
+                App.Logger.WriteException(logIdent, refreshTask.Exception);
+            }
+        }
+
         public void DoInstall()
         {
             const string LOG_IDENT = "Installer::DoInstall";
@@ -88,15 +113,7 @@ namespace Bloxstrap
                 }
             }
 
-            try
-            {
-                NvidiaTweaks.EnsureLatestInstalledAsync().GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteLine(LOG_IDENT, "Failed to download latest nvidiaProfileInspector during install");
-                App.Logger.WriteException(LOG_IDENT, ex);
-            }
+            TryRefreshBundledNvidiaTools(LOG_IDENT);
 
             using (var uninstallKey = Registry.CurrentUser.CreateSubKey(App.UninstallKey))
             {
@@ -510,15 +527,7 @@ namespace Bloxstrap
                 }
             }
 
-            try
-            {
-                NvidiaTweaks.EnsureLatestInstalledAsync().GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteLine(LOG_IDENT, "Failed to refresh latest nvidiaProfileInspector during upgrade");
-                App.Logger.WriteException(LOG_IDENT, ex);
-            }
+            TryRefreshBundledNvidiaTools(LOG_IDENT);
 
             using (var uninstallKey = Registry.CurrentUser.CreateSubKey(App.UninstallKey))
             {
