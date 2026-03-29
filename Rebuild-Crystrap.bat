@@ -85,7 +85,7 @@ if %ROBOCODE% GEQ 8 (
 
 echo.
 echo [5/5] Publishing shareable single-file EXE...
-dotnet publish "%PROJECT%" -c Release -r %RUNTIME% --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o "%PUBLISH_DIR%"
+dotnet publish "%PROJECT%" -c Release -r %RUNTIME% --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -o "%PUBLISH_DIR%"
 if errorlevel 1 (
     color 0E
     echo [WARNING] Build and installed copy succeeded, but shareable publish failed.
