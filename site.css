@@ -49,9 +49,9 @@ body::before {
 
 .page-shell {
     position: relative;
-    width: min(1180px, calc(100% - 32px));
+    width: min(1360px, calc(100% - 72px));
     margin: 0 auto;
-    padding: 24px 0;
+    padding: 36px 0 40px;
     display: flex;
     flex-direction: column;
 }
@@ -59,17 +59,17 @@ body::before {
 main {
     display: flex;
     flex-direction: column;
-    gap: 44px;
+    gap: 52px;
 }
 
 .hero {
     display: grid;
     grid-template-columns: 1.2fr 0.9fr;
-    gap: 20px;
+    gap: 40px;
     align-items: start;
     min-height: auto;
     padding-top: 0;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
 }
 
 .hero-copy,
@@ -82,7 +82,7 @@ main {
 }
 
 .hero-copy {
-    padding: 8px 8px 0 0;
+    padding: 18px 10px 0 0;
 }
 
 .eyebrow {
@@ -113,12 +113,12 @@ h1 {
     color: var(--muted);
     font-size: 1rem;
     line-height: 1.55;
-    margin-bottom: 20px;
+    margin-bottom: 28px;
 }
 
 .hero-actions {
     display: flex;
-    gap: 14px;
+    gap: 18px;
     flex-wrap: wrap;
 }
 
@@ -152,9 +152,9 @@ h1 {
 
 .hero-meta {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     flex-wrap: wrap;
-    margin-top: 16px;
+    margin-top: 22px;
     color: var(--muted);
     font-size: 0.88rem;
 }
@@ -169,7 +169,7 @@ h1 {
 
 .hero-card {
     position: relative;
-    padding: 22px;
+    padding: 26px;
     border: 1px solid var(--line);
     border-radius: var(--radius-xl);
     background: linear-gradient(180deg, rgba(20, 31, 44, 0.95), rgba(10, 15, 22, 0.88));
@@ -191,8 +191,8 @@ h1 {
 .logo-wrap {
     display: grid;
     place-items: center;
-    margin-bottom: 16px;
-    padding: 18px;
+    margin-bottom: 20px;
+    padding: 24px;
     border-radius: 24px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
     border: 1px solid var(--line);
@@ -206,7 +206,7 @@ h1 {
 .stat-grid,
 .feature-grid {
     display: grid;
-    gap: 12px;
+    gap: 18px;
 }
 
 .stat-grid {
@@ -215,7 +215,7 @@ h1 {
 
 .stat-card,
 .feature-card {
-    padding: 15px;
+    padding: 22px;
     border: 1px solid var(--line);
     border-radius: var(--radius-md);
     background: rgba(255, 255, 255, 0.04);
@@ -236,7 +236,7 @@ h1 {
 }
 
 .section {
-    padding-top: 0;
+    padding-top: 4px;
     position: relative;
     z-index: 1;
 }
@@ -310,7 +310,8 @@ h1 {
     .hero {
         min-height: auto;
         padding-top: 0;
-        margin-bottom: 8px;
+        gap: 24px;
+        margin-bottom: 12px;
     }
 
     .hero-copy {
@@ -320,8 +321,8 @@ h1 {
 
 @media (max-width: 640px) {
     .page-shell {
-        width: min(100% - 20px, 1180px);
-        padding: 20px 0;
+        width: min(100% - 24px, 1360px);
+        padding: 24px 0 28px;
     }
 
     .hero-card,
