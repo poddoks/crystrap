@@ -624,7 +624,9 @@ namespace Bloxstrap
                 {
                     try
                     {
-                        SyncRuntimeFiles(Path.GetDirectoryName(Paths.Process)!, Paths.Base);
+                        // During self-update we only need to overlay runtime files from the updater payload.
+                        // Stale-entry cleanup can fail on locked/foreign folders and should not block the upgrade.
+                        SyncRuntimeFiles(Path.GetDirectoryName(Paths.Process)!, Paths.Base, cleanupStaleEntries: false);
 
                         if (!String.Equals(MD5Hash.FromFile(Paths.Process), MD5Hash.FromFile(Paths.Application), StringComparison.OrdinalIgnoreCase))
                             throw new IOException("Installed Crystrap executable does not match the downloaded updater payload after sync.");
@@ -861,7 +863,7 @@ namespace Bloxstrap
             }
         }
 
-        public static void SyncRuntimeFiles(string sourceDirectory, string destinationDirectory)
+        public static void SyncRuntimeFiles(string sourceDirectory, string destinationDirectory, bool cleanupStaleEntries = true)
         {
             const string LOG_IDENT = "Installer::SyncRuntimeFiles";
 
@@ -878,7 +880,8 @@ namespace Bloxstrap
 
             Directory.CreateDirectory(destinationDirectory);
 
-            CleanupStaleRuntimeEntries(sourceDirectory, destinationDirectory);
+            if (cleanupStaleEntries)
+                CleanupStaleRuntimeEntries(sourceDirectory, destinationDirectory);
 
             foreach (string sourcePath in Directory.GetFileSystemEntries(sourceDirectory))
             {
