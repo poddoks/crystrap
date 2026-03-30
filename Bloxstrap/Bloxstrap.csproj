@@ -7,9 +7,9 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>Bloxstrap.ico</ApplicationIcon>
-    <Version>1.1.7</Version>
-    <FileVersion>1.1.7</FileVersion>
-    <AssemblyVersion>1.1.7.0</AssemblyVersion>
+    <Version>1.1.8</Version>
+    <FileVersion>1.1.8</FileVersion>
+    <AssemblyVersion>1.1.8.0</AssemblyVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>

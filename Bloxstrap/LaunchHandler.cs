@@ -36,7 +36,7 @@ namespace Bloxstrap
 
                     var versionComparison = Utilities.CompareVersions(App.Version, releaseInfo.TagName);
 
-                    if (App.IsProductionBuild && versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
+                    if (versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
                     {
                         App.Logger.WriteLine(LOG_IDENT, "No updates found for menu launch");
                         return;
