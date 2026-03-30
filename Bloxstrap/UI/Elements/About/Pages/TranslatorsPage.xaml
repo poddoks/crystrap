@@ -30,7 +30,7 @@
                 <TextBlock Margin="0,8,0,0" Text="poddoks" />
                 <TextBlock Text="jano" />
                 <TextBlock Text="dwellmycave" />
-                <TextBlock Text="dyson" />
+                <TextBlock Text="dysun" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Margin="8,0,8,0">
