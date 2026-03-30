@@ -18,15 +18,25 @@ namespace Bloxstrap
             if (App.LaunchSettings.BypassUpdateCheck || App.LaunchSettings.UpgradeFlag.Active || !App.Settings.Prop.CheckForUpdates)
                 return false;
 
-            App.Logger.WriteLine(LOG_IDENT, "Checking for updates before opening the menu");
+            App.Logger.WriteLine(LOG_IDENT, "Queueing background update check before opening the menu");
 
-            bool updateStarted = App.CheckForUpdatesAsync().GetAwaiter().GetResult();
-
-            if (updateStarted)
+            _ = Task.Run(async () =>
             {
-                App.Logger.WriteLine(LOG_IDENT, "Update started, terminating current process");
-                App.Terminate();
-            }
+                try
+                {
+                    bool updateStarted = await App.CheckForUpdatesAsync();
+
+                    if (updateStarted)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, "Update started, terminating current process");
+                        App.Terminate();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteException(LOG_IDENT, ex);
+                }
+            });
 
             return false;
         }
@@ -90,6 +100,23 @@ namespace Bloxstrap
             StartInstalledCrystrap("-settings", LOG_IDENT);
             App.Logger.WriteLine(LOG_IDENT, "Installed Crystrap launched successfully, terminating installer process");
             App.Terminate();
+        }
+
+        private static bool HandoffInteractiveInstallToInstalledCrystrap(NextAction closeAction)
+        {
+            const string LOG_IDENT = "LaunchHandler::HandoffInteractiveInstallToInstalledCrystrap";
+
+            if (String.Equals(Paths.Process, Paths.Application, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            if (closeAction != NextAction.LaunchSettings)
+                return false;
+
+            App.Logger.WriteLine(LOG_IDENT, "Installer was launched from a temporary executable, handing off to the installed Crystrap settings window");
+            StartInstalledCrystrap("-settings", LOG_IDENT);
+            App.Logger.WriteLine(LOG_IDENT, "Installed Crystrap launched successfully, terminating installer process");
+            App.Terminate();
+            return true;
         }
 
         public static void ProcessNextAction(NextAction action, bool isUnfinishedInstall = false)
@@ -233,6 +260,9 @@ namespace Bloxstrap
                     RefreshPostInstallState();
                     
                     if (installer.CloseAction == NextAction.LaunchSettings && InstallRobloxThenOpenSettingsIfNeeded())
+                        return;
+
+                    if (HandoffInteractiveInstallToInstalledCrystrap(installer.CloseAction))
                         return;
                 }
 

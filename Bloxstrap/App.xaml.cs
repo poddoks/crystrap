@@ -411,11 +411,6 @@ namespace Bloxstrap
             {
                 Paths.Initialize(installLocation);
 
-                // ensure the installed runtime exists, not just the exe
-                if (!String.Equals(Paths.Process, Paths.Application, StringComparison.OrdinalIgnoreCase)
-                    && Directory.GetParent(Paths.Process)?.FullName is string processDirectory)
-                    Installer.SyncRuntimeFiles(processDirectory, Paths.Base);
-
                 Logger.Initialize(LaunchSettings.UninstallFlag.Active);
 
                 if (!Logger.Initialized && !Logger.NoWriteMode)

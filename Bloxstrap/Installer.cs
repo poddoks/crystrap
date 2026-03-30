@@ -41,7 +41,7 @@ namespace Bloxstrap
             if (!String.IsNullOrEmpty(Paths.Application) && File.Exists(Paths.Application))
             {
                 Shortcut.Create(Paths.Application, "", DesktopShortcut);
-                Shortcut.Create(Paths.Application, "-settings -bypassupdatecheck", StartMenuShortcut);
+                Shortcut.Create(Paths.Application, "-settings", StartMenuShortcut);
             }
         }
 
@@ -93,6 +93,57 @@ namespace Bloxstrap
             }
         }
 
+        private static void WaitForInstalledCrystrapToExit(string logIdent, TimeSpan timeout)
+        {
+            DateTime deadline = DateTime.UtcNow.Add(timeout);
+
+            while (DateTime.UtcNow < deadline)
+            {
+                bool anyInstalledProcessesRunning = Process.GetProcessesByName(App.ProjectName)
+                    .Any(process =>
+                    {
+                        try
+                        {
+                            return !String.Equals(process.MainModule?.FileName, Paths.Process, StringComparison.OrdinalIgnoreCase)
+                                && String.Equals(process.MainModule?.FileName, Paths.Application, StringComparison.OrdinalIgnoreCase);
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+                    });
+
+                if (!anyInstalledProcessesRunning)
+                    return;
+
+                App.Logger.WriteLine(logIdent, "Waiting for the installed Crystrap process to exit before replacing runtime files");
+                Thread.Sleep(250);
+            }
+        }
+
+        private static void StopCrystrapProcessesAtPath(string executablePath, string logIdent, TimeSpan timeout)
+        {
+            foreach (var process in Process.GetProcessesByName(App.ProjectName))
+            {
+                try
+                {
+                    if (!String.Equals(process.MainModule?.FileName, executablePath, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    App.Logger.WriteLine(logIdent, $"Stopping existing Crystrap process at {executablePath} (PID {process.Id})");
+                    process.CloseMainWindow();
+
+                    if (!process.WaitForExit((int)timeout.TotalMilliseconds))
+                        process.Kill(true);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(logIdent, $"Failed to stop existing Crystrap process at {executablePath}");
+                    App.Logger.WriteException(logIdent, ex);
+                }
+            }
+        }
+
         public void DoInstall()
         {
             const string LOG_IDENT = "Installer::DoInstall";
@@ -107,6 +158,8 @@ namespace Bloxstrap
             if (!IsImplicitInstall)
             {
                 Filesystem.AssertReadOnly(Paths.Application);
+                StopCrystrapProcessesAtPath(Paths.Application, LOG_IDENT, TimeSpan.FromSeconds(5));
+                WaitForInstalledCrystrapToExit(LOG_IDENT, TimeSpan.FromSeconds(5));
 
                 try
                 {
@@ -156,7 +209,7 @@ namespace Bloxstrap
                 Shortcut.Create(Paths.Application, "", DesktopShortcut);
 
             if (CreateStartMenuShortcuts)
-                Shortcut.Create(Paths.Application, "-settings -bypassupdatecheck", StartMenuShortcut);
+                Shortcut.Create(Paths.Application, "-settings", StartMenuShortcut);
 
             if (ImportSettings)
             {
@@ -501,6 +554,8 @@ namespace Bloxstrap
 
             Filesystem.AssertReadOnly(Paths.Application);
 
+            WaitForInstalledCrystrapToExit(LOG_IDENT, TimeSpan.FromSeconds(10));
+
             using (var ipl = new InterProcessLock("AutoUpdater", TimeSpan.FromSeconds(5)))
             {
                 if (!ipl.IsAcquired)
@@ -643,7 +698,7 @@ namespace Bloxstrap
                             App.Logger.WriteException(LOG_IDENT, ex);
                         }
 
-                        Shortcut.Create(Paths.Application, "-settings -bypassupdatecheck", StartMenuShortcut);
+                        Shortcut.Create(Paths.Application, "-settings", StartMenuShortcut);
                     }
 
                     Registry.CurrentUser.DeleteSubKeyTree("Software\\Bloxstrap", false);

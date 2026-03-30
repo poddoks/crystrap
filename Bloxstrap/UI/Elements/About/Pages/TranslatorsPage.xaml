@@ -12,7 +12,7 @@
       Scrollable="True">
     <StackPanel Margin="0,0,14,14">
         <TextBlock Text="{x:Static resources:Strings.About_Translators_Title}" FontWeight="Medium" FontSize="24" />
-        <TextBlock Text="Crystrap’s translator section has been customized for Type://Soul groups." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+        <TextBlock Text="Crystrap's top shottas" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
 
         <Grid Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
@@ -30,6 +30,7 @@
                 <TextBlock Margin="0,8,0,0" Text="poddoks" />
                 <TextBlock Text="jano" />
                 <TextBlock Text="dwellmycave" />
+                <TextBlock Text="dyson" />
             </StackPanel>
 
             <StackPanel Grid.Column="1" Margin="8,0,8,0">
@@ -41,6 +42,7 @@
                 <TextBlock Margin="0,8,0,0" Text="seqix" />
                 <TextBlock Text="nox" />
                 <TextBlock Text="clover" />
+                <TextBlock Text="pancake" />
             </StackPanel>
 
             <StackPanel Grid.Column="2" Margin="8,0,0,0">
@@ -53,6 +55,7 @@
                 <TextBlock Text="evsh" />
                 <TextBlock Text="pancake" />
                 <TextBlock Text="fresh" />
+                <TextBlock Text="ling" />
             </StackPanel>
         </Grid>
     </StackPanel>

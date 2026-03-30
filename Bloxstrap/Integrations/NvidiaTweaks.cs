@@ -216,8 +216,9 @@ namespace Bloxstrap.Integrations
             {
                 FileName = npiPath,
                 Arguments = $"\"{nipPath}\"",
-                UseShellExecute = false,
-                CreateNoWindow = true
+                WorkingDirectory = Path.GetDirectoryName(npiPath),
+                UseShellExecute = true,
+                Verb = "runas"
             });
 
             process?.WaitForExit(15000);
