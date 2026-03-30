@@ -24,9 +24,8 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        #name: Crystrap (Release) (${{ github.sha }})
+        name: crystrap-release
         path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe
-        archive: false
 
   release:
     needs: build
@@ -38,9 +37,9 @@ jobs:
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
-        #with:
-        #  name: Crystrap (Release) (${{ github.sha }})
-        #  path: release
+        with:
+          name: crystrap-release
+          path: release
 
       #- name: Rename binaries
       #  run: mv release/Crystrap.exe Crystrap.exe
@@ -49,7 +48,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: Crystrap.exe
+          files: release/Crystrap.exe
           name: Crystrap ${{ github.ref_name }}
           fail_on_unmatched_files: true
 
@@ -63,9 +62,9 @@ jobs:
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
-        #with:
-        #  name: Crystrap (Release) (${{ github.sha }})
-        #  path: release
+        with:
+          name: crystrap-release
+          path: release
 
       #- name: Rename binaries
       #  run: mv release/Crystrap.exe Crystrap.exe
@@ -74,6 +73,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: Crystrap.exe
+          files: release/Crystrap.exe
           name: Crystrap ${{ github.ref_name }}
           fail_on_unmatched_files: true
