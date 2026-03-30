@@ -176,6 +176,24 @@ namespace Bloxstrap
                 ?? assets.FirstOrDefault();
         }
 
+        private static string BuildVersionedUpdatePayloadPath(string assetName, string releaseTag)
+        {
+            string safeTag = new(
+                releaseTag
+                    .Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch)
+                    .ToArray()
+            );
+
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(assetName);
+            string extension = Path.GetExtension(assetName);
+
+            if (String.IsNullOrWhiteSpace(extension))
+                extension = ".exe";
+
+            string payloadName = $"{fileNameWithoutExtension}-{safeTag}{extension}";
+            return Path.Combine(Paths.TempUpdates, payloadName);
+        }
+
         public static async Task<bool> CheckForUpdatesAsync(LaunchMode launchMode = LaunchMode.None, IBootstrapperDialog? dialog = null)
         {
             const string LOG_IDENT = "App::CheckForUpdatesAsync";
@@ -217,7 +235,7 @@ namespace Bloxstrap
                 if (asset is null)
                     throw new InvalidOperationException("Latest release does not contain a downloadable asset.");
 
-                string downloadLocation = Path.Combine(Paths.TempUpdates, asset.Name);
+                string downloadLocation = BuildVersionedUpdatePayloadPath(asset.Name, releaseInfo.TagName);
 
                 Directory.CreateDirectory(Paths.TempUpdates);
 
