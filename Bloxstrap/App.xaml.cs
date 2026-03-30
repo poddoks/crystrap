@@ -184,14 +184,9 @@ namespace Bloxstrap
                     .ToArray()
             );
 
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(assetName);
-            string extension = Path.GetExtension(assetName);
-
-            if (String.IsNullOrWhiteSpace(extension))
-                extension = ".exe";
-
-            string payloadName = $"{fileNameWithoutExtension}-{safeTag}{extension}";
-            return Path.Combine(Paths.TempUpdates, payloadName);
+            // Keep the original executable name so runtime sync replaces Paths.Application correctly.
+            // Version isolation is handled by putting each payload under its own tag-named directory.
+            return Path.Combine(Paths.TempUpdates, safeTag, assetName);
         }
 
         public static async Task<bool> CheckForUpdatesAsync(LaunchMode launchMode = LaunchMode.None, IBootstrapperDialog? dialog = null)
@@ -237,7 +232,7 @@ namespace Bloxstrap
 
                 string downloadLocation = BuildVersionedUpdatePayloadPath(asset.Name, releaseInfo.TagName);
 
-                Directory.CreateDirectory(Paths.TempUpdates);
+                Directory.CreateDirectory(Path.GetDirectoryName(downloadLocation)!);
 
                 Logger.WriteLine(LOG_IDENT, $"Downloading {releaseInfo.TagName}...");
 
