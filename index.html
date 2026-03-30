@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Crystrap</title>
     <meta name="description" content="Crystrap is a competitive-performance Roblox bootstrapper focused on max FPS, lower delay, faster joins, and lower overhead.">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="site.css">
 </head>
 <body>
@@ -16,7 +19,11 @@
         <p class="lede">Crystrap: A performance focused Roblox bootstrapper</p>
 
                 <div class="hero-actions">
-                    <a class="button button-primary" href="https://github.com/poddoks/crystrap/releases/latest/download/Crystrap.exe">Download Latest Release</a>
+                    <a
+                        class="button button-primary"
+                        id="download-latest"
+                        href="https://github.com/poddoks/crystrap/releases/latest/download/Crystrap.exe"
+                    >Download Latest Release</a>
                     <a class="button button-secondary" href="https://github.com/poddoks/crystrap">GitHub</a>
                 </div>
 
@@ -84,5 +91,108 @@
 
         </main>
     </div>
+    <script>
+        (function () {
+            const owner = "poddoks";
+            const repo = "crystrap";
+            const assetName = "Crystrap.exe";
+            const downloadButton = document.getElementById("download-latest");
+            const defaultLabel = "Download Latest Release";
+
+            if (!downloadButton) {
+                return;
+            }
+
+            function buildFallbackUrl() {
+                return `https://github.com/${owner}/${repo}/releases/latest/download/${assetName}?cache-bust=${Date.now()}`;
+            }
+
+            async function resolveLatestAssetUrl() {
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest?cache-bust=${Date.now()}`, {
+                    cache: "no-store",
+                    headers: {
+                        Accept: "application/vnd.github+json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`GitHub API returned ${response.status}`);
+                }
+
+                const release = await response.json();
+                const asset = Array.isArray(release.assets)
+                    ? release.assets.find((entry) => entry && entry.name === assetName)
+                    : null;
+
+                if (!asset || !asset.browser_download_url) {
+                    throw new Error(`Asset ${assetName} was not found in the latest release`);
+                }
+
+                return {
+                    tagName: release.tag_name,
+                    assetUrl: `${asset.browser_download_url}?cache-bust=${Date.now()}`
+                };
+            }
+
+            async function updateButtonLabel() {
+                try {
+                    const latest = await resolveLatestAssetUrl();
+
+                    if (latest.tagName) {
+                        downloadButton.textContent = `Download ${latest.tagName}`;
+                        downloadButton.setAttribute("aria-label", `Download Crystrap ${latest.tagName}`);
+                    } else {
+                        downloadButton.textContent = defaultLabel;
+                        downloadButton.setAttribute("aria-label", defaultLabel);
+                    }
+                } catch (error) {
+                    downloadButton.textContent = defaultLabel;
+                    downloadButton.setAttribute("aria-label", defaultLabel);
+                    console.warn("Failed to fetch the latest Crystrap release for button label.", error);
+                }
+            }
+
+            downloadButton.addEventListener("click", async function (event) {
+                event.preventDefault();
+
+                const originalText = downloadButton.textContent;
+
+                downloadButton.textContent = "Checking latest release...";
+                downloadButton.setAttribute("aria-busy", "true");
+
+                try {
+                    const latest = await resolveLatestAssetUrl();
+                    downloadButton.href = latest.assetUrl;
+                    window.location.assign(latest.assetUrl);
+                } catch (error) {
+                    const fallbackUrl = buildFallbackUrl();
+                    downloadButton.href = fallbackUrl;
+                    window.location.assign(fallbackUrl);
+                    console.warn("Failed to resolve latest Crystrap release dynamically.", error);
+                } finally {
+                    downloadButton.removeAttribute("aria-busy");
+                    downloadButton.textContent = originalText;
+                }
+            });
+
+            downloadButton.addEventListener("auxclick", async function (event) {
+                if (event.button !== 1) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                try {
+                    const latest = await resolveLatestAssetUrl();
+                    window.open(latest.assetUrl, "_blank", "noopener");
+                } catch (error) {
+                    window.open(buildFallbackUrl(), "_blank", "noopener");
+                    console.warn("Failed to resolve latest Crystrap release dynamically.", error);
+                }
+            });
+
+            updateButtonLabel();
+        })();
+    </script>
 </body>
 </html>

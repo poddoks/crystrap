@@ -166,6 +166,38 @@ namespace Bloxstrap
             }
         }
 
+        private static string BuildInstalledRelaunchArguments()
+        {
+            return String.Join(
+                " ",
+                App.LaunchSettings.Args
+                    .Where(arg => !String.Equals(arg, "-upgrade", StringComparison.OrdinalIgnoreCase))
+                    .Select(QuoteArgumentIfNeeded)
+            );
+        }
+
+        private static string QuoteArgumentIfNeeded(string argument)
+        {
+            if (String.IsNullOrEmpty(argument))
+                return "\"\"";
+
+            if (!argument.Any(ch => Char.IsWhiteSpace(ch) || ch == '"'))
+                return argument;
+
+            return $"\"{argument.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
+        }
+
+        private static void RefreshInstalledLaunchTargets()
+        {
+            WindowsRegistry.RegisterApis();
+            WindowsRegistry.RegisterPlayer();
+
+            if (App.IsStudioVisible)
+                WindowsRegistry.RegisterStudio();
+
+            RefreshInstalledShortcuts();
+        }
+
         public void DoInstall()
         {
             const string LOG_IDENT = "Installer::DoInstall";
@@ -578,38 +610,42 @@ namespace Bloxstrap
 
             WaitForInstalledCrystrapToExit(LOG_IDENT, TimeSpan.FromSeconds(10));
 
-            using (var ipl = new InterProcessLock("AutoUpdater", TimeSpan.FromSeconds(5)))
+            using (var ipl = new InterProcessLock("AutoUpdater", TimeSpan.FromSeconds(15)))
             {
                 if (!ipl.IsAcquired)
                 {
                     App.Logger.WriteLine(LOG_IDENT, "Failed to update! (Could not obtain singleton mutex)");
                     return;
                 }
-            }
 
-            // prior to 2.8.0, auto-updating was handled with this... bruteforce method
-            // now it's handled with the system mutex you see above, but we need to keep this logic for <2.8.0 versions
-            for (int i = 1; i <= 10; i++)
-            {
-                try
+                // prior to 2.8.0, auto-updating was handled with this... bruteforce method
+                // now it's handled with the system mutex you see above, but we need to keep this logic for <2.8.0 versions
+                for (int i = 1; i <= 10; i++)
                 {
-                    SyncRuntimeFiles(Path.GetDirectoryName(Paths.Process)!, Paths.Base);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (i == 1)
+                    try
                     {
-                        App.Logger.WriteLine(LOG_IDENT, "Waiting for write permissions to update version");
-                    }
-                    else if (i == 10)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to update! (Could not get write permissions after 10 tries/5 seconds)");
-                        App.Logger.WriteException(LOG_IDENT, ex);
-                        return;
-                    }
+                        SyncRuntimeFiles(Path.GetDirectoryName(Paths.Process)!, Paths.Base);
 
-                    Thread.Sleep(500);
+                        if (!String.Equals(MD5Hash.FromFile(Paths.Process), MD5Hash.FromFile(Paths.Application), StringComparison.OrdinalIgnoreCase))
+                            throw new IOException("Installed Crystrap executable does not match the downloaded updater payload after sync.");
+
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (i == 1)
+                        {
+                            App.Logger.WriteLine(LOG_IDENT, "Waiting for write permissions to update version");
+                        }
+                        else if (i == 10)
+                        {
+                            App.Logger.WriteLine(LOG_IDENT, "Failed to update! (Could not get write permissions after 10 tries/5 seconds)");
+                            App.Logger.WriteException(LOG_IDENT, ex);
+                            return;
+                        }
+
+                        Thread.Sleep(500);
+                    }
                 }
             }
 
@@ -624,6 +660,8 @@ namespace Bloxstrap
                 uninstallKey.SetValueSafe("URLInfoAbout", App.ProjectSupportLink);
                 uninstallKey.SetValueSafe("URLUpdateInfo", App.ProjectDownloadLink);
             }
+
+            RefreshInstalledLaunchTargets();
 
             // update migrations
 
@@ -803,6 +841,23 @@ namespace Bloxstrap
                     MessageBoxImage.Information,
                     MessageBoxButton.OK
                 );
+            }
+
+            if (isAutoUpgrade && !String.Equals(Paths.Process, Paths.Application, StringComparison.OrdinalIgnoreCase))
+            {
+                string relaunchArguments = BuildInstalledRelaunchArguments();
+
+                App.Logger.WriteLine(LOG_IDENT, $"Handing off upgraded session to installed Crystrap at {Paths.Application} with arguments '{relaunchArguments}'");
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Paths.Application,
+                    Arguments = relaunchArguments,
+                    WorkingDirectory = Paths.Base,
+                    UseShellExecute = true
+                });
+
+                App.Terminate();
             }
         }
 

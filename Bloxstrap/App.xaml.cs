@@ -70,6 +70,8 @@ namespace Bloxstrap
 
         public static readonly CookiesManager Cookies = new();
 
+        private static InterProcessLock? _autoUpdaterLock;
+
         public static readonly HttpClient HttpClient = new(
             new HttpClientLoggingHandler(
                 new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }
@@ -301,7 +303,8 @@ namespace Bloxstrap
 
                 Settings.Save();
 
-                new InterProcessLock("AutoUpdater");
+                _autoUpdaterLock?.Dispose();
+                _autoUpdaterLock = new InterProcessLock("AutoUpdater");
 
                 Process.Start(startInfo);
 
