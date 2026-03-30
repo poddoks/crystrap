@@ -42,21 +42,25 @@ namespace Bloxstrap
                         return;
                     }
 
-                    var asset = App.GetLatestReleaseAsset(releaseInfo);
-                    string downloadUrl = asset?.BrowserDownloadUrl ?? $"{App.ProjectDownloadLink}/releases/latest/download/{App.ProjectReleaseAssetName}";
-
                     App.Logger.WriteLine(LOG_IDENT, $"Update {releaseInfo.TagName} is available for menu launch");
 
                     var result = Frontend.ShowMessageBox(
-                        $"Crystrap {releaseInfo.TagName} is available. Would you like to download it now?",
+                        $"Crystrap {releaseInfo.TagName} is available. Would you like to update now?",
                         MessageBoxImage.Information,
                         MessageBoxButton.YesNo
                     );
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        App.Logger.WriteLine(LOG_IDENT, $"Opening browser download for {releaseInfo.TagName}");
-                        Utilities.ShellExecute(downloadUrl);
+                        App.Logger.WriteLine(LOG_IDENT, $"Starting internal updater for {releaseInfo.TagName}");
+
+                        bool updateStarted = await App.CheckForUpdatesAsync();
+
+                        if (updateStarted)
+                        {
+                            App.Logger.WriteLine(LOG_IDENT, "Update started from menu launch, terminating current process");
+                            App.Terminate();
+                        }
                     }
                 }
                 catch (Exception ex)
