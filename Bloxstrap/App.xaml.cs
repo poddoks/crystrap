@@ -238,8 +238,32 @@ namespace Bloxstrap
 
                 startInfo.ArgumentList.Add("-upgrade");
 
+                bool forwardedRobloxProtocolArg = false;
+
                 foreach (string arg in LaunchSettings.Args)
+                {
+                    if (!forwardedRobloxProtocolArg
+                        && (arg.StartsWith("roblox:", StringComparison.OrdinalIgnoreCase)
+                            || arg.StartsWith("roblox-player:", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        startInfo.ArgumentList.Add("-player");
+                        startInfo.ArgumentList.Add(arg);
+                        forwardedRobloxProtocolArg = true;
+                        continue;
+                    }
+
+                    if (!forwardedRobloxProtocolArg
+                        && (arg.StartsWith("roblox-studio:", StringComparison.OrdinalIgnoreCase)
+                            || arg.StartsWith("roblox-studio-auth:", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        startInfo.ArgumentList.Add("-studio");
+                        startInfo.ArgumentList.Add(arg);
+                        forwardedRobloxProtocolArg = true;
+                        continue;
+                    }
+
                     startInfo.ArgumentList.Add(arg);
+                }
 
                 if (launchMode == LaunchMode.Player && !startInfo.ArgumentList.Contains("-player"))
                     startInfo.ArgumentList.Add("-player");

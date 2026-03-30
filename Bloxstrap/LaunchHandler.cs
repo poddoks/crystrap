@@ -11,6 +11,8 @@ namespace Bloxstrap
 {
     public static class LaunchHandler
     {
+        private static int _menuUpdateCheckQueued;
+
         private static bool TryUpdateBeforeMenuLaunch()
         {
             const string LOG_IDENT = "LaunchHandler::TryUpdateBeforeMenuLaunch";
@@ -18,18 +20,43 @@ namespace Bloxstrap
             if (App.LaunchSettings.BypassUpdateCheck || App.LaunchSettings.UpgradeFlag.Active || !App.Settings.Prop.CheckForUpdates)
                 return false;
 
-            App.Logger.WriteLine(LOG_IDENT, "Queueing background update check before opening the menu");
+            if (Interlocked.Exchange(ref _menuUpdateCheckQueued, 1) == 1)
+                return false;
+
+            App.Logger.WriteLine(LOG_IDENT, "Queueing background update prompt check before opening the menu");
 
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    bool updateStarted = await App.CheckForUpdatesAsync();
+                    var releaseInfo = await App.GetLatestRelease();
 
-                    if (updateStarted)
+                    if (releaseInfo is null)
+                        return;
+
+                    var versionComparison = Utilities.CompareVersions(App.Version, releaseInfo.TagName);
+
+                    if (App.IsProductionBuild && versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
                     {
-                        App.Logger.WriteLine(LOG_IDENT, "Update started, terminating current process");
-                        App.Terminate();
+                        App.Logger.WriteLine(LOG_IDENT, "No updates found for menu launch");
+                        return;
+                    }
+
+                    var asset = App.GetLatestReleaseAsset(releaseInfo);
+                    string downloadUrl = asset?.BrowserDownloadUrl ?? $"{App.ProjectDownloadLink}/releases/latest/download/{App.ProjectReleaseAssetName}";
+
+                    App.Logger.WriteLine(LOG_IDENT, $"Update {releaseInfo.TagName} is available for menu launch");
+
+                    var result = Frontend.ShowMessageBox(
+                        $"Crystrap {releaseInfo.TagName} is available. Would you like to download it now?",
+                        MessageBoxImage.Information,
+                        MessageBoxButton.YesNo
+                    );
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Opening browser download for {releaseInfo.TagName}");
+                        Utilities.ShellExecute(downloadUrl);
                     }
                 }
                 catch (Exception ex)
