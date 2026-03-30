@@ -197,7 +197,7 @@ namespace Bloxstrap
 
             var versionComparison = Utilities.CompareVersions(Version, releaseInfo.TagName);
 
-            if (IsProductionBuild && versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
+            if (versionComparison == VersionComparison.Equal || versionComparison == VersionComparison.GreaterThan)
             {
                 Logger.WriteLine(LOG_IDENT, "No updates found");
                 return false;

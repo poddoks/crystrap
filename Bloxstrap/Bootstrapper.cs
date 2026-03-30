@@ -235,7 +235,16 @@ namespace Bloxstrap
                 HandleConnectionError(connectionResult);
 
 #if (!DEBUG || DEBUG_UPDATER) && !QA_BUILD
-            if (App.Settings.Prop.CheckForUpdates && !App.LaunchSettings.UpgradeFlag.Active)
+            bool isBrowserPlayerProtocolLaunch =
+                _launchMode == LaunchMode.Player &&
+                !string.IsNullOrEmpty(App.LaunchSettings.RobloxLaunchArgs) &&
+                (App.LaunchSettings.RobloxLaunchArgs.StartsWith("roblox-player:", StringComparison.OrdinalIgnoreCase)
+                 || App.LaunchSettings.RobloxLaunchArgs.StartsWith("roblox:", StringComparison.OrdinalIgnoreCase));
+
+            if (isBrowserPlayerProtocolLaunch)
+                App.Logger.WriteLine(LOG_IDENT, "Skipping Crystrap self-update check for browser/player protocol launch to preserve Roblox auth handoff");
+
+            if (App.Settings.Prop.CheckForUpdates && !App.LaunchSettings.UpgradeFlag.Active && !isBrowserPlayerProtocolLaunch)
             {
                 bool updatePresent = await CheckForUpdates();
                 

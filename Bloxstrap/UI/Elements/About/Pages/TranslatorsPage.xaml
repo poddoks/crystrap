@@ -53,7 +53,6 @@
                 </TextBlock>
                 <TextBlock Margin="0,8,0,0" Text="zy" />
                 <TextBlock Text="evsh" />
-                <TextBlock Text="pancake" />
                 <TextBlock Text="fresh" />
                 <TextBlock Text="ling" />
             </StackPanel>

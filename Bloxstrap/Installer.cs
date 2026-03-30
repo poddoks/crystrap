@@ -41,7 +41,7 @@ namespace Bloxstrap
             if (!String.IsNullOrEmpty(Paths.Application) && File.Exists(Paths.Application))
             {
                 Shortcut.Create(Paths.Application, "", DesktopShortcut);
-                Shortcut.Create(Paths.Application, "-settings", StartMenuShortcut);
+                Shortcut.Create(Paths.Application, "", StartMenuShortcut);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Bloxstrap
                 Shortcut.Create(Paths.Application, "", DesktopShortcut);
 
             if (CreateStartMenuShortcuts)
-                Shortcut.Create(Paths.Application, "-settings", StartMenuShortcut);
+                Shortcut.Create(Paths.Application, "", StartMenuShortcut);
 
             if (ImportSettings)
             {
@@ -698,7 +698,7 @@ namespace Bloxstrap
                             App.Logger.WriteException(LOG_IDENT, ex);
                         }
 
-                        Shortcut.Create(Paths.Application, "-settings", StartMenuShortcut);
+                        Shortcut.Create(Paths.Application, "", StartMenuShortcut);
                     }
 
                     Registry.CurrentUser.DeleteSubKeyTree("Software\\Bloxstrap", false);
