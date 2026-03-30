@@ -26,6 +26,28 @@ namespace Bloxstrap
             "diagnostic.log"
         };
 
+        private static readonly HashSet<string> RuntimeCleanupPreservedNames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Backups",
+            "Downloads",
+            "Logs",
+            "Modifications",
+            "Profiles",
+            "Versions",
+            "Settings.json",
+            "State.json",
+            "RobloxState.json",
+            "Data.json",
+            "diagnostic.log",
+            "desktop.ini",
+            "nvidiaProfileInspector",
+            "nvidiaProfileInspector.exe",
+            "nvidiaProfileInspector.exe.config",
+            "Reference.xml",
+            "Crystrap_NoTextures.nip",
+            "Crystrap_Reset.nip"
+        };
+
         /// <summary>
         /// Should this version automatically open the release notes page?
         /// Recommended for major updates only.
@@ -801,6 +823,8 @@ namespace Bloxstrap
 
             Directory.CreateDirectory(destinationDirectory);
 
+            CleanupStaleRuntimeEntries(sourceDirectory, destinationDirectory);
+
             foreach (string sourcePath in Directory.GetFileSystemEntries(sourceDirectory))
             {
                 string name = Path.GetFileName(sourcePath);
@@ -820,6 +844,61 @@ namespace Bloxstrap
                     CopyFileWithLockedDestinationCheck(sourcePath, destinationPath);
                 }
             }
+        }
+
+        private static void CleanupStaleRuntimeEntries(string sourceDirectory, string destinationDirectory)
+        {
+            const string LOG_IDENT = "Installer::CleanupStaleRuntimeEntries";
+
+            var sourceEntries = Directory
+                .GetFileSystemEntries(sourceDirectory, "*", SearchOption.AllDirectories)
+                .Select(path => Path.GetRelativePath(sourceDirectory, path))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string destinationPath in Directory.GetFileSystemEntries(destinationDirectory))
+            {
+                string name = Path.GetFileName(destinationPath);
+
+                if (RuntimeCleanupPreservedNames.Contains(name))
+                    continue;
+
+                CleanupStaleRuntimeEntry(sourceDirectory, destinationPath, destinationDirectory, sourceEntries, LOG_IDENT);
+            }
+        }
+
+        private static void CleanupStaleRuntimeEntry(
+            string sourceDirectory,
+            string destinationPath,
+            string destinationRoot,
+            HashSet<string> sourceEntries,
+            string logIdent
+        )
+        {
+            string relativePath = Path.GetRelativePath(destinationRoot, destinationPath);
+            string rootName = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)[0];
+
+            if (RuntimeCleanupPreservedNames.Contains(rootName))
+                return;
+
+            bool destinationIsDirectory = Directory.Exists(destinationPath);
+
+            if (!sourceEntries.Contains(relativePath))
+            {
+                App.Logger.WriteLine(logIdent, $"Removing stale runtime {(destinationIsDirectory ? "directory" : "file")}: {destinationPath}");
+
+                if (destinationIsDirectory)
+                    Directory.Delete(destinationPath, true);
+                else if (File.Exists(destinationPath))
+                    File.Delete(destinationPath);
+
+                return;
+            }
+
+            if (!destinationIsDirectory)
+                return;
+
+            foreach (string childPath in Directory.GetFileSystemEntries(destinationPath))
+                CleanupStaleRuntimeEntry(sourceDirectory, childPath, destinationRoot, sourceEntries, logIdent);
         }
 
         private static void CopyDirectory(string sourceDirectory, string destinationDirectory)

@@ -221,11 +221,40 @@ namespace Bloxstrap
 
                 Logger.WriteLine(LOG_IDENT, $"Downloading {releaseInfo.TagName}...");
 
+                if (File.Exists(downloadLocation))
+                {
+                    try
+                    {
+                        string? existingDownloadedVersion = FileVersionInfo.GetVersionInfo(downloadLocation).ProductVersion;
+
+                        if (!String.Equals(existingDownloadedVersion, releaseInfo.TagName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Logger.WriteLine(LOG_IDENT, $"Removing stale updater payload {downloadLocation} (found {existingDownloadedVersion ?? "unknown"}, expected {releaseInfo.TagName})");
+                            File.Delete(downloadLocation);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLine(LOG_IDENT, $"Failed to inspect existing updater payload at {downloadLocation}, forcing refresh");
+                        Logger.WriteException(LOG_IDENT, ex);
+
+                        try
+                        {
+                            File.Delete(downloadLocation);
+                        }
+                        catch (Exception deleteEx)
+                        {
+                            Logger.WriteLine(LOG_IDENT, $"Failed to delete stale updater payload at {downloadLocation}");
+                            Logger.WriteException(LOG_IDENT, deleteEx);
+                        }
+                    }
+                }
+
                 if (!File.Exists(downloadLocation))
                 {
                     var response = await HttpClient.GetAsync(asset.BrowserDownloadUrl);
 
-                    await using var fileStream = new FileStream(downloadLocation, FileMode.OpenOrCreate, FileAccess.Write);
+                    await using var fileStream = new FileStream(downloadLocation, FileMode.Create, FileAccess.Write);
                     await response.Content.CopyToAsync(fileStream);
                 }
 
