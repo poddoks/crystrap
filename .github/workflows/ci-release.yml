@@ -21,20 +21,11 @@ jobs:
     - name: Publish
       run: dotnet publish -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained true .\Bloxstrap\Bloxstrap.csproj
 
-    - name: Create versioned release copy
-      shell: pwsh
-      run: |
-        [xml]$project = Get-Content .\Bloxstrap\Bloxstrap.csproj
-        $version = ($project.Project.PropertyGroup.Version | Select-Object -First 1)
-        Copy-Item .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe ".\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap $version.exe" -Force
-
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         #name: Crystrap (Release) (${{ github.sha }})
-        path: |
-          .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe
-          .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap *.exe
+        path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe
         archive: false
 
   release:
@@ -58,9 +49,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: |
-            Crystrap.exe
-            Crystrap *.exe
+          files: Crystrap.exe
           name: Crystrap ${{ github.ref_name }}
           fail_on_unmatched_files: true
 
@@ -85,8 +74,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          files: |
-            Crystrap.exe
-            Crystrap *.exe
+          files: Crystrap.exe
           name: Crystrap ${{ github.ref_name }}
           fail_on_unmatched_files: true
