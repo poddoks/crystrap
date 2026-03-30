@@ -10,6 +10,7 @@ set "BUILD_DIR=%ROOT%Bloxstrap\bin\Debug\net6.0-windows"
 set "INSTALL_DIR=%LOCALAPPDATA%\Crystrap"
 set "PUBLISH_DIR=%ROOT%publish"
 set "RUNTIME=win-x64"
+set "VERSION="
 set "DOTNET_CLI_HOME=%ROOT%.dotnet-cli"
 set "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1"
 set "DOTNET_NOLOGO=1"
@@ -29,6 +30,13 @@ if not exist "%SOLUTION%" (
     echo.
     pause
     exit /b 1
+)
+
+for /f "usebackq delims=" %%I in (`powershell -NoProfile -Command "[xml]$proj = Get-Content '%PROJECT%'; $proj.Project.PropertyGroup.Version | Select-Object -First 1"`) do set "VERSION=%%I"
+if "%VERSION%"=="" (
+    color 0E
+    echo [WARNING] Could not determine project version. Versioned publish copy will be skipped.
+    echo.
 )
 
 echo [1/4] Checking .NET SDK...
@@ -96,6 +104,10 @@ if errorlevel 1 (
     exit /b 0
 )
 
+if not "%VERSION%"=="" (
+    copy /Y "%PUBLISH_DIR%\Crystrap.exe" "%PUBLISH_DIR%\Crystrap %VERSION%.exe" >nul
+)
+
 color 0A
 echo.
 echo Build complete.
@@ -108,6 +120,11 @@ echo %INSTALL_DIR%\Crystrap.exe
 echo.
 echo Shareable single-file EXE:
 echo %PUBLISH_DIR%\Crystrap.exe
+if not "%VERSION%"=="" (
+echo.
+echo Versioned shareable EXE:
+echo %PUBLISH_DIR%\Crystrap %VERSION%.exe
+)
 echo.
 pause
 exit /b 0
