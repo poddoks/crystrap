@@ -92,6 +92,37 @@ namespace Bloxstrap
             "Settings.json"
         };
 
+        public void NormalizeInstallLocation()
+        {
+            if (String.IsNullOrWhiteSpace(InstallLocation))
+                return;
+
+            string trimmedLocation = InstallLocation.Trim();
+
+            try
+            {
+                string root = Path.GetPathRoot(trimmedLocation) ?? "";
+
+                // If the user selects a drive root like D:\, install into D:\Crystrap instead.
+                if (!String.IsNullOrEmpty(root)
+                    && String.Equals(
+                        Path.GetFullPath(trimmedLocation).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                        root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                        StringComparison.OrdinalIgnoreCase
+                    ))
+                {
+                    InstallLocation = Path.Combine(root, App.ProjectName);
+                    return;
+                }
+
+                InstallLocation = trimmedLocation;
+            }
+            catch
+            {
+                InstallLocation = trimmedLocation;
+            }
+        }
+
         private static void TryRefreshBundledNvidiaTools(string logIdent)
         {
             if (!NvidiaTweaks.IsNvidiaPresent())
@@ -335,6 +366,8 @@ namespace Bloxstrap
 
         public bool CheckInstallLocation()
         {
+            NormalizeInstallLocation();
+
             if (string.IsNullOrEmpty(InstallLocation))
             {
                 InstallLocationError = Strings.Menu_InstallLocation_NotSet;

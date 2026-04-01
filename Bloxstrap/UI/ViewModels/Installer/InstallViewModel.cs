@@ -26,6 +26,8 @@ namespace Bloxstrap.UI.ViewModels.Installer
                 }
 
                 installer.InstallLocation = value;
+                installer.NormalizeInstallLocation();
+                OnPropertyChanged(nameof(InstallLocation));
                 OnPropertyChanged(nameof(DataFoundMessageVisibility));
             }
         }
@@ -79,6 +81,7 @@ namespace Bloxstrap.UI.ViewModels.Installer
             {
                 SetCanContinueEvent?.Invoke(this, false);
 
+                OnPropertyChanged(nameof(InstallLocation));
                 OnPropertyChanged(nameof(ErrorMessage));
                 return false;
             }
