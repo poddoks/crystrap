@@ -1775,27 +1775,6 @@ namespace Bloxstrap
             {
                 string versionPath = Path.Combine(_latestVersionDirectory, relativePath);
 
-                if (App.Settings.Prop.UseDisableAppPatch)
-                {
-                    try
-                    {
-                        if (File.Exists(versionPath))
-                        {
-                            Filesystem.AssertReadOnly(versionPath);
-                            File.Delete(versionPath);
-                            App.Logger.WriteLine(LOG_IDENT, $"Removed {relativePath} to stop Roblox from handing off to desktop app mode");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to remove {relativePath}");
-                        App.Logger.WriteException(LOG_IDENT, ex);
-                        success = false;
-                    }
-
-                    continue;
-                }
-
                 if (File.Exists(versionPath))
                     continue;
 

@@ -7,53 +7,31 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
 {
     internal class ServerInformationViewModel : NotifyPropertyChangedViewModel
     {
-        private readonly ActivityWatcher _activityWatcher;
+        public string InstanceId => String.Empty;
 
-        public string InstanceId => _activityWatcher.Data.JobId;
-
-        public string ServerType => _activityWatcher.Data.ServerType.ToTranslatedString();
+        public string ServerType => String.Empty;
 
         public string ServerLocation { get; private set; } = Strings.Common_Loading;
 
         public string ServerUptime { get; private set; } = Strings.Common_Loading;
 
-        public Visibility ServerLocationVisibility => App.Settings.Prop.ShowServerDetails ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility ServerUptimeVisibility => App.Settings.Prop.ShowServerDetails ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility ServerLocationVisibility => Visibility.Collapsed;
+        public Visibility ServerUptimeVisibility => Visibility.Collapsed;
 
         public ICommand CopyInstanceIdCommand => new RelayCommand(CopyInstanceId);
 
         public ServerInformationViewModel(Watcher watcher)
         {
-            _activityWatcher = watcher.ActivityWatcher!;
-
-            if (ServerLocationVisibility == Visibility.Visible)
-                QueryServerLocation();
-
-            if (ServerUptimeVisibility == Visibility.Visible)
-                QueryServerUptime();
+            throw new NotSupportedException("Server information is no longer available.");
         }
 
-        public async void QueryServerLocation()
+        public void QueryServerLocation()
         {
-            string? location = await _activityWatcher.Data.QueryServerLocation();
-
-            if (String.IsNullOrEmpty(location))
-                ServerLocation = Strings.Common_NotAvailable;
-            else
-                ServerLocation = location;
-
             OnPropertyChanged(nameof(ServerLocation));
         }
 
         public void QueryServerUptime()
         {
-            DateTime? serverTime = _activityWatcher.Data.StartTime;
-            TimeSpan _serverUptime = TimeSpan.Zero; // uhh okay??
-            if (serverTime is not null)
-                _serverUptime = DateTime.UtcNow - serverTime.Value;
-
-            ServerUptime = Time.FormatTimeSpan(_serverUptime);
-
             OnPropertyChanged(nameof(ServerUptime));
         }
 

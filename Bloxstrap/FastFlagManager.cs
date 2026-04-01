@@ -6,6 +6,14 @@ namespace Bloxstrap
 {
     public class FastFlagManager : JsonManager<Dictionary<string, object>>
     {
+        private static readonly IReadOnlyDictionary<string, string> CaptureDisabledDefaults = new Dictionary<string, string>
+        {
+            ["DFFlagForceCaptureEnabled"] = "False",
+            ["FFlagEnableCapturesHotkeyExperiment_v4"] = "False",
+            ["FIntVideoCaptureMaxLongSide"] = "0",
+            ["FIntVideoCaptureMaxShortSide"] = "0"
+        };
+
         public override string ClassName => nameof(FastFlagManager);
 
         public override string LOG_IDENT_CLASS => ClassName;
@@ -176,6 +184,12 @@ namespace Bloxstrap
 
             if (GetPreset("Rendering.ManualFullscreen") != "False")
                 SetPreset("Rendering.ManualFullscreen", "False");
+
+            foreach (var flag in CaptureDisabledDefaults)
+            {
+                if (!String.Equals(GetValue(flag.Key), flag.Value, StringComparison.OrdinalIgnoreCase))
+                    SetValue(flag.Key, flag.Value);
+            }
         }
     }
 }

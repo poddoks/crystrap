@@ -1,9 +1,9 @@
-﻿using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Bloxstrap.Integrations
 {
@@ -11,15 +11,15 @@ namespace Bloxstrap.Integrations
     {
         private WINEVENTPROC? _setTitleHook;
 
-        private HWND _hWnd;
-        private uint _robloxPID;
+        private readonly HWND _hWnd;
+        private readonly uint _robloxPID;
 
         public WindowManipulation(long windowHandle, long robloxProcessId)
         {
             const string LOG_IDENT = "WindowManipulation";
 
             App.Logger.WriteLine(LOG_IDENT, $"Got window handle as {windowHandle}");
-            _hWnd = (HWND)(IntPtr)windowHandle; // amazing
+            _hWnd = (HWND)(IntPtr)windowHandle;
             _robloxPID = (uint)robloxProcessId;
         }
 
@@ -29,15 +29,13 @@ namespace Bloxstrap.Integrations
             App.Logger.WriteLine(LOG_IDENT, "Setting Roblox to borderless fullscreen");
 
             const int GWLSTYLE = -16;
-
-            int style = PInvoke.GetWindowLong(_hWnd, (WINDOW_LONG_PTR_INDEX)GWLSTYLE);
-
             const int WS_CAPTION = 0x00C00000;
             const int WS_THICKFRAME = 0x00040000;
             const int WS_MINIMIZEBOX = 0x00020000;
             const int WS_MAXIMIZEBOX = 0x00010000;
             const int WS_SYSMENU = 0x00080000;
 
+            int style = PInvoke.GetWindowLong(_hWnd, (WINDOW_LONG_PTR_INDEX)GWLSTYLE);
             style &= ~WS_CAPTION;
             style &= ~WS_THICKFRAME;
             style &= ~WS_MINIMIZEBOX;
@@ -46,10 +44,8 @@ namespace Bloxstrap.Integrations
 
             Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
-            PInvoke.SetWindowLong((HWND)_hWnd, (WINDOW_LONG_PTR_INDEX)GWLSTYLE, style);
-
-            // hack or else it'll still be exclusive
-            PInvoke.SetWindowPos((HWND)_hWnd, (HWND)IntPtr.Zero, 0, 0, resolution.Width, resolution.Height + 1, SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
+            PInvoke.SetWindowLong(_hWnd, (WINDOW_LONG_PTR_INDEX)GWLSTYLE, style);
+            PInvoke.SetWindowPos(_hWnd, (HWND)IntPtr.Zero, 0, 0, resolution.Width, resolution.Height + 1, SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_SHOWWINDOW);
         }
 
         public void ApplyWindowModifications()
@@ -65,28 +61,24 @@ namespace Bloxstrap.Integrations
 
             _setTitleHook = new(SetWindowTitleHook);
 
-            // icon
             App.Logger.WriteLine(LOG_IDENT, "Setting Roblox icon");
             RobloxIcon robloxIcon = App.Settings.Prop.RobloxIcon;
             if (robloxIcon != RobloxIcon.IconDefault)
-                using (var icon = robloxIcon.GetIcon())
-                {
-                    IntPtr smallIcon = PInvoke.CopyIcon((HICON)icon.Handle);
-                    IntPtr largeIcon = PInvoke.CopyIcon((HICON)icon.Handle);
+            {
+                using var icon = robloxIcon.GetIcon();
 
-                    PInvoke.SendMessage(_hWnd, WM_SETICON, ICON_SMALL, smallIcon);
-                    PInvoke.SendMessage(_hWnd, WM_SETICON, ICON_BIG, largeIcon);
-                }
+                IntPtr smallIcon = PInvoke.CopyIcon((HICON)icon.Handle);
+                IntPtr largeIcon = PInvoke.CopyIcon((HICON)icon.Handle);
 
+                PInvoke.SendMessage(_hWnd, WM_SETICON, ICON_SMALL, smallIcon);
+                PInvoke.SendMessage(_hWnd, WM_SETICON, ICON_BIG, largeIcon);
+            }
 
-            // title
             App.Logger.WriteLine(LOG_IDENT, "Setting Roblox title");
             string robloxTitle = App.Settings.Prop.RobloxTitle;
             if (robloxTitle != "Roblox")
             {
                 PInvoke.SetWindowText(_hWnd, robloxTitle);
-
-                // because (Internal) exists Roblox will reset the title after couple of seconds
                 App.Current.Dispatcher.Invoke(() => PInvoke.SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, null, _setTitleHook, _robloxPID, 0, WINEVENT_OUTOFCONTEXT));
             }
         }
@@ -95,12 +87,11 @@ namespace Bloxstrap.Integrations
         {
             const string LOG_IDENT = "WindowManipulation::SetWindowTitleHook";
             string robloxTitle = App.Settings.Prop.RobloxTitle;
-            string newRobloxTitle = robloxTitle;
 
             Span<char> titleBuffer = new char[256];
             PInvoke.GetWindowText(_hWnd, titleBuffer);
 
-            newRobloxTitle = titleBuffer.TrimEnd('\0').ToString();
+            string newRobloxTitle = titleBuffer.TrimEnd('\0').ToString();
 
             if (newRobloxTitle != robloxTitle)
             {

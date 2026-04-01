@@ -18,7 +18,6 @@ namespace Bloxstrap.Models.Persistable
         public Theme Theme { get; set; } = Theme.Default;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool DeveloperMode { get; set; } = false;
-        public bool ForceLocalData { get; set; } = false;
         public bool CheckForUpdates { get; set; } = true;
         public bool MultiInstanceLaunching { get; set; } = false;
         public bool ConfirmLaunches { get; set; } = true;
@@ -48,15 +47,6 @@ namespace Bloxstrap.Models.Persistable
         // integration configuration
         public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.Never;
         public List<string> CleanerDirectories { get; set; } = new List<string>();
-        public bool FakeBorderlessFullscreen { get; set; } = false;
-        public bool EnableActivityTracking { get; set; } = true;
-        public bool UseDiscordRichPresence { get; set; } = true;
-        public bool HideRPCButtons { get; set; } = true;
-        public bool ShowAccountOnRichPresence { get; set; } = false;
-        public bool ShowServerDetails { get; set; } = false;
         public ObservableCollection<CustomIntegration> CustomIntegrations { get; set; } = new();
-
-        // mod preset configuration
-        public bool UseDisableAppPatch { get; set; } = false;
     }
 }

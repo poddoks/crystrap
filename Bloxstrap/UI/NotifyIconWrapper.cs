@@ -16,8 +16,6 @@ namespace Bloxstrap.UI
         
         private readonly Watcher _watcher;
 
-        private ActivityWatcher? _activityWatcher => _watcher.ActivityWatcher;
-
         EventHandler? _alertClickHandler;
 
         public NotifyIconWrapper(Watcher watcher)
@@ -35,9 +33,6 @@ namespace Bloxstrap.UI
 
             _notifyIcon.MouseClick += MouseClickEventHandler;
 
-            if (_activityWatcher is not null && App.Settings.Prop.ShowServerDetails)
-                _activityWatcher.ShowNotif += ShowNotif;
-
             _menuContainer = new(_watcher);
             _menuContainer.Show();
         }
@@ -54,11 +49,10 @@ namespace Bloxstrap.UI
         #endregion
 
         #region Activity handlers
-        public async void ShowNotif(object? sender, EventArgs e)
+        public void ShowNotif(object? sender, EventArgs e)
         {
-            if (_activityWatcher is null)
-                return;
-
+            return;
+/*
             string title = _activityWatcher.Data.ServerType switch
             {
                 ServerType.Public => Strings.ContextMenu_ServerInformation_Notification_Title_Public,
@@ -93,6 +87,7 @@ namespace Bloxstrap.UI
                 10,
                 (_, _) => _menuContainer.ShowServerInformationWindow()
             );
+*/
         }
         #endregion
 

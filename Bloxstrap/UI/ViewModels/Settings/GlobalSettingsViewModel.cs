@@ -329,6 +329,9 @@ namespace Bloxstrap.UI.ViewModels.Settings
         private static readonly IReadOnlyDictionary<string, string> AbsoluteMaxFpsMinDelayExtraFlags = new Dictionary<string, string>
         {
             ["DFFlagForceCaptureEnabled"] = "False",
+            ["FFlagEnableCapturesHotkeyExperiment_v4"] = "False",
+            ["FIntVideoCaptureMaxLongSide"] = "0",
+            ["FIntVideoCaptureMaxShortSide"] = "0",
             ["FFlagVideoReportHardwareBufferMetrics"] = "False",
             ["FFlagVideoServiceAddHardwareCodecMetrics"] = "False"
         };
@@ -420,7 +423,10 @@ namespace Bloxstrap.UI.ViewModels.Settings
         };
         private static readonly IReadOnlyDictionary<string, string> CaptureFeaturesDisabledFlags = new Dictionary<string, string>
         {
-            ["DFFlagForceCaptureEnabled"] = "False"
+            ["DFFlagForceCaptureEnabled"] = "False",
+            ["FFlagEnableCapturesHotkeyExperiment_v4"] = "False",
+            ["FIntVideoCaptureMaxLongSide"] = "0",
+            ["FIntVideoCaptureMaxShortSide"] = "0"
         };
         private static readonly IReadOnlyDictionary<string, string> UltraLowDelayFlags = new Dictionary<string, string>
         {

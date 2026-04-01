@@ -3,7 +3,6 @@
     public class ActivityWatcher : IDisposable
     {
 
-        private const string GameMessageEntry                = "[FLog::Output] [BloxstrapRPC]";
         private const string GameJoiningEntry                = "[FLog::Output] ! Joining game";
 
         // these entries are technically volatile!
@@ -26,7 +25,6 @@
         private const string GameJoiningUniversePattern      = @"universeid:([0-9]+).*userid:([0-9]+)";
         private const string GameJoiningUDMUXPattern         = @"UDMUX Address = ([0-9\.]+), Port = [0-9]+ \| RCC Server Address = ([0-9\.]+), Port = [0-9]+";
         private const string GameJoinedEntryPattern          = @"serverId: ([0-9\.]+)\|[0-9]+";
-        private const string GameMessageEntryPattern         = @"\[BloxstrapRPC\] (.*)";
         private const string GameServerUptimePattern         = @"Server Prefix:.+_(\d{8}T\d{6}Z)_RCC_[0-9a-z]+";
 
         private int _logEntriesRead = 0;
@@ -39,10 +37,6 @@
         public event EventHandler? OnGameLeave;
         public event EventHandler? OnLogOpen;
         public event EventHandler? OnAppClose;
-        public event EventHandler<Message>? OnRPCMessage;
-
-        private DateTime LastRPCRequest;
-
         public string LogLocation = null!;
 
         public bool InGame = false;
@@ -310,83 +304,7 @@
                     _teleportMarker = true;
                     _reservedTeleportMarker = true;
                 }
-                else if (logMessage.StartsWith(GameMessageEntry))
-                {
-                    var match = Regex.Match(logMessage, GameMessageEntryPattern);
-
-                    if (match.Groups.Count != 2)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to assert format for RPC message entry");
-                        App.Logger.WriteLine(LOG_IDENT, logMessage);
-                        return;
-                    }
-
-                    string messagePlain = match.Groups[1].Value;
-                    Message? message;
-
-                    App.Logger.WriteLine(LOG_IDENT, $"Received message: '{messagePlain}'");
-
-                    if ((DateTime.Now - LastRPCRequest).TotalSeconds <= 1)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Dropping message as ratelimit has been hit");
-                        return;
-                    }
-
-                    try
-                    {
-                        message = JsonSerializer.Deserialize<Message>(messagePlain);
-                    }
-                    catch (Exception)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization threw an exception)");
-                        return;
-                    }
-
-                    if (message is null)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization returned null)");
-                        return;
-                    }
-
-                    if (string.IsNullOrEmpty(message.Command))
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (Command is empty)");
-                        return;
-                    }
-
-                    if (message.Command == "SetLaunchData")
-                    {
-                        string? data;
-
-                        try
-                        {
-                            data = message.Data.Deserialize<string>();
-                        }
-                        catch (Exception)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization threw an exception)");
-                            return;
-                        }
-
-                        if (data is null)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT, "Failed to parse message! (JSON deserialization returned null)");
-                            return;
-                        }
-
-                        if (data.Length > 200)
-                        {
-                            App.Logger.WriteLine(LOG_IDENT, "Data cannot be longer than 200 characters");
-                            return;
-                        }
-
-                        Data.RPCLaunchData = data;
-                    }
-
-                    OnRPCMessage?.Invoke(this, message);
-
-                    LastRPCRequest = DateTime.Now;
-                } else if (entry.Contains(GameServerUptimeEntry))
+                else if (entry.Contains(GameServerUptimeEntry))
                 {
                     Match match = Regex.Match(entry, GameServerUptimePattern);
 
@@ -404,7 +322,7 @@
                     Data.StartTime = DateTime.ParseExact(startTime, "yyyyMMdd'T'HHmmss'Z'", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
 
                     // ip should be fetched by now
-                    if (App.Settings.Prop.ShowServerDetails && Data.MachineAddressValid)
+                    if (Data.MachineAddressValid)
                         _ = Data.QueryServerLocation();
 
                     ShowNotif?.Invoke(this, null!);

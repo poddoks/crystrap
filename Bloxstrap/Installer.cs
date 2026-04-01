@@ -738,18 +738,16 @@ namespace Bloxstrap
 
                 if (Utilities.CompareVersions(existingVer, "2.6.0") == VersionComparison.LessThan)
                 {
-                    if (App.Settings.Prop.UseDisableAppPatch)
+                    try
                     {
-                        try
-                        {
-                            File.Delete(Path.Combine(Paths.Modifications, "ExtraContent\\places\\Mobile.rbxl"));
-                        }
-                        catch (Exception ex)
-                        {
-                            App.Logger.WriteException(LOG_IDENT, ex);
-                        }
+                        string legacyDisableAppPatch = Path.Combine(Paths.Modifications, "ExtraContent\\places\\Mobile.rbxl");
 
-                        App.Settings.Prop.EnableActivityTracking = true;
+                        if (File.Exists(legacyDisableAppPatch))
+                            File.Delete(legacyDisableAppPatch);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteException(LOG_IDENT, ex);
                     }
 
                     if (App.Settings.Prop.BootstrapperStyle == BootstrapperStyle.ClassicFluentDialog)
@@ -1017,14 +1015,11 @@ namespace Bloxstrap
 
             try
             {
-                File.Copy(sourcePath, destinationPath, true);
+                CopyFileWithOverwriteRecovery(sourcePath, destinationPath);
             }
-            catch (IOException) when (File.Exists(destinationPath))
+            catch (Exception ex) when ((ex is IOException || ex is UnauthorizedAccessException) && File.Exists(destinationPath))
             {
-                string sourceHash = MD5Hash.FromFile(sourcePath);
-                string destinationHash = MD5Hash.FromFile(destinationPath);
-
-                if (String.Equals(sourceHash, destinationHash, StringComparison.OrdinalIgnoreCase))
+                if (DestinationMatchesSource(sourcePath, destinationPath))
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"Skipping locked file with identical contents: {destinationPath}");
                     return;
@@ -1032,6 +1027,88 @@ namespace Bloxstrap
 
                 App.Logger.WriteLine(LOG_IDENT, $"Locked destination differs from source: {destinationPath}");
                 throw;
+            }
+        }
+
+        private static void CopyFileWithOverwriteRecovery(string sourcePath, string destinationPath)
+        {
+            const string LOG_IDENT = "Installer::CopyFileWithOverwriteRecovery";
+
+            try
+            {
+                File.Copy(sourcePath, destinationPath, true);
+                return;
+            }
+            catch (Exception ex) when ((ex is IOException || ex is UnauthorizedAccessException) && File.Exists(destinationPath))
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Initial overwrite failed for {destinationPath}, attempting recovery");
+            }
+
+            string? backupPath = null;
+
+            try
+            {
+                backupPath = MoveDestinationFileAside(destinationPath);
+                File.Copy(sourcePath, destinationPath, true);
+
+                if (!String.IsNullOrEmpty(backupPath) && File.Exists(backupPath))
+                    File.Delete(backupPath);
+            }
+            catch
+            {
+                if (!File.Exists(destinationPath) && !String.IsNullOrEmpty(backupPath) && File.Exists(backupPath))
+                {
+                    try
+                    {
+                        File.Move(backupPath, destinationPath, true);
+                    }
+                    catch
+                    {
+                        // Best effort restore only.
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        private static string? MoveDestinationFileAside(string destinationPath)
+        {
+            const string LOG_IDENT = "Installer::MoveDestinationFileAside";
+
+            if (!File.Exists(destinationPath))
+                return null;
+
+            Filesystem.AssertReadOnly(destinationPath);
+
+            string backupPath = $"{destinationPath}.bak";
+
+            if (File.Exists(backupPath))
+            {
+                Filesystem.AssertReadOnly(backupPath);
+                File.Delete(backupPath);
+            }
+
+            App.Logger.WriteLine(LOG_IDENT, $"Moving existing file aside before overwrite: {destinationPath}");
+            File.Move(destinationPath, backupPath, true);
+            return backupPath;
+        }
+
+        private static bool DestinationMatchesSource(string sourcePath, string destinationPath)
+        {
+            const string LOG_IDENT = "Installer::DestinationMatchesSource";
+
+            try
+            {
+                string sourceHash = MD5Hash.FromFile(sourcePath);
+                string destinationHash = MD5Hash.FromFile(destinationPath);
+                return String.Equals(sourceHash, destinationHash, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Could not compare '{sourcePath}' and '{destinationPath}'");
+                App.Logger.WriteException(LOG_IDENT, ex);
+                return false;
             }
         }
 

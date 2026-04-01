@@ -492,6 +492,8 @@ namespace Bloxstrap
                 State.Load();
                 RobloxState.Load();
                 FastFlags.Load();
+                if (FastFlags.Changed)
+                    FastFlags.Save();
                 GlobalSettings.Load();
 
                 if (Settings.Prop.AllowCookieAccess)

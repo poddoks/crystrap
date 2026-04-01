@@ -11,11 +11,7 @@ namespace Bloxstrap
         
         private readonly NotifyIconWrapper? _notifyIcon;
 
-        public readonly ActivityWatcher? ActivityWatcher;
-
         public readonly WindowManipulation? WindowManipulation;
-
-        public readonly DiscordRichPresence? RichPresence;
 
         public Watcher()
         {
@@ -56,27 +52,6 @@ namespace Bloxstrap
                 throw new Exception("Watcher data is invalid");
 
             WindowManipulation = new(_watcherData.Handle, _watcherData.ProcessId);
-
-            if (App.Settings.Prop.EnableActivityTracking)
-            {
-                ActivityWatcher = new(_watcherData.LogFile);
-
-                if (App.Settings.Prop.UseDisableAppPatch)
-                {
-                    ActivityWatcher.OnAppClose += delegate
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, "Received desktop app exit, closing Roblox");
-                        using var process = Process.GetProcessById(_watcherData.ProcessId);
-                        process.CloseMainWindow();
-                    };
-                }
-
-                if (App.Settings.Prop.UseDiscordRichPresence && !App.State.Prop.WatcherRunning)
-                {
-                    App.Logger.WriteLine(LOG_IDENT, "Running rpc");
-                    RichPresence = new(ActivityWatcher);
-                }
-            }
 
             _notifyIcon = new(this);
         }
@@ -175,11 +150,7 @@ namespace Bloxstrap
 
             DateTimeOffset? noWindowSince = null;
 
-            ActivityWatcher?.Start();
             WindowManipulation?.ApplyWindowModifications();
-
-            if (App.Settings.Prop.FakeBorderlessFullscreen)
-                WindowManipulation?.FakeBorderless();
 
             while (Utilities.GetProcessesSafe().Any(x => x.Id == _watcherData.ProcessId))
             {
@@ -249,7 +220,6 @@ namespace Bloxstrap
             App.Logger.WriteLine("Watcher::Dispose", "Disposing Watcher");
 
             _notifyIcon?.Dispose();
-            RichPresence?.Dispose();
 
             App.State.Prop.WatcherRunning = false;
 

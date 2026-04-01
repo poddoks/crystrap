@@ -21,7 +21,6 @@ global using Bloxstrap.Models.APIs.Config;
 global using Bloxstrap.Models.APIs.GitHub;
 global using Bloxstrap.Models.APIs.Roblox;
 global using Bloxstrap.Models.Attributes;
-global using Bloxstrap.Models.BloxstrapRPC;
 global using Bloxstrap.Models.Entities;
 global using Bloxstrap.Models.Manifest;
 global using Bloxstrap.Models.Persistable;
