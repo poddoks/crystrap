@@ -44,12 +44,11 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Column="0" Tag="PresetFastFlags" Margin="5,0,8,0" Padding="10,5,10,5" Width="200" SelectionChanged="PresetComboBox_SelectionChanged">
-                    <ComboBoxItem Content="Ultra Low Delay" />
-                    <ComboBoxItem Content="Poddoks Fast Flags" />
-                </ComboBox>
-
-                <ui:Button Grid.Column="1" Content="Apply" Appearance="Primary" Click="ApplyPresetButton_Click" />
+                <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+                    <ComboBox Tag="PresetFastFlags" Margin="5,0,8,0" Padding="10,5,10,5" Width="200" SelectionChanged="PresetComboBox_SelectionChanged" />
+                    <ui:Button Margin="0,0,8,0" Content="Apply" Appearance="Secondary" Click="ApplyPresetButton_Click" />
+                    <ui:Button Tag="CustomPresetAction" Content="Save Current" Appearance="Secondary" Click="CustomPresetActionButton_Click" />
+                </StackPanel>
             </Grid>
         </controls:OptionControl>
 

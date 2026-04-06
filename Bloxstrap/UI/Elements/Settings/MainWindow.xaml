@@ -102,10 +102,54 @@
                 </StackPanel>
             </StatusBarItem>
             <StatusBarItem Grid.Column="2" Padding="0,0,4,0">
-                <ui:Button Content="{x:Static resources:Strings.Menu_SaveAndLaunch}" Appearance="Primary" Command="{Binding SaveAndLaunchSettingsCommand, Mode=OneWay}" />
+                    <ui:Button Content="{x:Static resources:Strings.Menu_SaveAndLaunch}" Appearance="Secondary" Foreground="White" Command="{Binding SaveAndLaunchSettingsCommand, Mode=OneWay}">
+                        <ui:Button.Background>
+                            <SolidColorBrush Color="#329FC1" />
+                        </ui:Button.Background>
+                        <ui:Button.BorderBrush>
+                            <SolidColorBrush Color="#2A86A3" />
+                        </ui:Button.BorderBrush>
+                        <ui:Button.MouseOverBackground>
+                            <SolidColorBrush Color="#40AFD3" />
+                        </ui:Button.MouseOverBackground>
+                        <ui:Button.MouseOverBorderBrush>
+                            <SolidColorBrush Color="#379CBE" />
+                        </ui:Button.MouseOverBorderBrush>
+                        <ui:Button.PressedBackground>
+                            <SolidColorBrush Color="#267F9A" />
+                        </ui:Button.PressedBackground>
+                        <ui:Button.PressedBorderBrush>
+                            <SolidColorBrush Color="#206E86" />
+                        </ui:Button.PressedBorderBrush>
+                        <ui:Button.PressedForeground>
+                            <SolidColorBrush Color="White" />
+                        </ui:Button.PressedForeground>
+                    </ui:Button>
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" Padding="0,0,4,0">
-                <ui:Button Content="{x:Static resources:Strings.Menu_Save}" Appearance="Primary" Command="{Binding SaveSettingsCommand, Mode=OneWay}" />
+                    <ui:Button Content="{x:Static resources:Strings.Menu_Save}" Appearance="Secondary" Foreground="White" Command="{Binding SaveSettingsCommand, Mode=OneWay}">
+                        <ui:Button.Background>
+                            <SolidColorBrush Color="#329FC1" />
+                        </ui:Button.Background>
+                        <ui:Button.BorderBrush>
+                            <SolidColorBrush Color="#2A86A3" />
+                        </ui:Button.BorderBrush>
+                        <ui:Button.MouseOverBackground>
+                            <SolidColorBrush Color="#40AFD3" />
+                        </ui:Button.MouseOverBackground>
+                        <ui:Button.MouseOverBorderBrush>
+                            <SolidColorBrush Color="#379CBE" />
+                        </ui:Button.MouseOverBorderBrush>
+                        <ui:Button.PressedBackground>
+                            <SolidColorBrush Color="#267F9A" />
+                        </ui:Button.PressedBackground>
+                        <ui:Button.PressedBorderBrush>
+                            <SolidColorBrush Color="#206E86" />
+                        </ui:Button.PressedBorderBrush>
+                        <ui:Button.PressedForeground>
+                            <SolidColorBrush Color="White" />
+                        </ui:Button.PressedForeground>
+                    </ui:Button>
             </StatusBarItem>
             <StatusBarItem Grid.Column="4" Padding="0,0,0,0">
                 <ui:Button Content="{x:Static resources:Strings.Common_Close}" Command="{Binding CloseWindowCommand, Mode=OneWay}" />

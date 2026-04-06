@@ -832,6 +832,9 @@ namespace Bloxstrap.UI.ViewModels.Settings
             GraphicsQuality = "1";
             FramerateCap = "9999";
             ReducedMotion = true;
+            NetworkOptimized = true;
+            MemoryOptimized = true;
+            CullingOptimized = true;
 
             foreach (var flag in PoddoksExtremeFastFlags)
                 App.FastFlags.SetValue(flag.Key, flag.Value);
@@ -845,6 +848,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             TelemetryReduced = true;
             TextureDegraded = true;
             TerrainDecorationsDisabled = true;
+            ParallelPhysicsOptimized = true;
             VisualEffectsDisabled = true;
             SelectedTextureQuality = TextureQuality.Level0;
             SelectedMSAALevel = MSAAMode.x1;
