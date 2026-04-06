@@ -11,12 +11,14 @@ using CommunityToolkit.Mvvm.Input;
 
 using Bloxstrap.Models.SettingTasks;
 using Bloxstrap.AppData;
+using Forms = System.Windows.Forms;
 
 namespace Bloxstrap.UI.ViewModels.Settings
 {
     public class ModsViewModel : NotifyPropertyChangedViewModel
     {
         private void OpenModsFolder() => Process.Start("explorer.exe", Paths.Modifications);
+        private void OpenSkyboxFolder() => Process.Start("explorer.exe", Paths.CustomSkybox);
 
         private readonly Dictionary<string, byte[]> FontHeaders = new()
         {
@@ -57,13 +59,52 @@ namespace Bloxstrap.UI.ViewModels.Settings
             OnPropertyChanged(nameof(DeleteCustomFontVisibility));
         }
 
+        private void ManageSkybox()
+        {
+            if (!string.IsNullOrEmpty(SkyboxTask.NewState))
+            {
+                SkyboxTask.NewState = "";
+            }
+            else
+            {
+                using var dialog = new Forms.FolderBrowserDialog
+                {
+                    Description = "Select a folder containing a Roblox-ready skybox pack."
+                };
+
+                if (dialog.ShowDialog() != Forms.DialogResult.OK)
+                    return;
+
+                if (!SkyboxModPresetTask.HasRequiredFiles(dialog.SelectedPath))
+                {
+                    string missingFiles = string.Join(", ", SkyboxModPresetTask.GetMissingFiles(dialog.SelectedPath));
+                    Frontend.ShowMessageBox($"The selected folder must contain all 6 Roblox skybox files: {missingFiles}", MessageBoxImage.Error);
+                    return;
+                }
+
+                SkyboxTask.NewState = dialog.SelectedPath;
+            }
+
+            OnPropertyChanged(nameof(ChooseSkyboxVisibility));
+            OnPropertyChanged(nameof(DeleteSkyboxVisibility));
+            OnPropertyChanged(nameof(OpenSkyboxFolderVisibility));
+        }
+
         public ICommand OpenModsFolderCommand => new RelayCommand(OpenModsFolder);
+        public ICommand OpenSkyboxFolderCommand => new RelayCommand(OpenSkyboxFolder);
 
         public Visibility ChooseCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Collapsed : Visibility.Visible;
 
         public Visibility DeleteCustomFontVisibility => !String.IsNullOrEmpty(TextFontTask.NewState) ? Visibility.Visible : Visibility.Collapsed;
 
+        public Visibility ChooseSkyboxVisibility => !string.IsNullOrEmpty(SkyboxTask.NewState) ? Visibility.Collapsed : Visibility.Visible;
+
+        public Visibility DeleteSkyboxVisibility => !string.IsNullOrEmpty(SkyboxTask.NewState) ? Visibility.Visible : Visibility.Collapsed;
+
+        public Visibility OpenSkyboxFolderVisibility => !string.IsNullOrEmpty(SkyboxTask.NewState) ? Visibility.Visible : Visibility.Collapsed;
+
         public ICommand ManageCustomFontCommand => new RelayCommand(ManageCustomFont);
+        public ICommand ManageSkyboxCommand => new RelayCommand(ManageSkybox);
 
         public ICommand OpenCompatSettingsCommand => new RelayCommand(OpenCompatSettings);
 
@@ -101,6 +142,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
         });
 
         public FontModPresetTask TextFontTask { get; } = new();
+
+        public SkyboxModPresetTask SkyboxTask { get; } = new();
 
         private void OpenCompatSettings()
         {

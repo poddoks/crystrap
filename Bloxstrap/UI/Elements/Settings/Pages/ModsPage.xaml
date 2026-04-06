@@ -96,5 +96,15 @@
                 <ui:Button Icon="Delete16" Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Remove}" Appearance="Danger" Command="{Binding ManageCustomFontCommand}" Visibility="{Binding DeleteCustomFontVisibility, Mode=OneWay}" />
             </StackPanel>
         </controls:OptionControl>
+
+        <controls:OptionControl 
+            Header="Skybox" 
+            Description="Choose a folder containing all 6 Roblox skybox files: sky512_bk.tex, sky512_dn.tex, sky512_ft.tex, sky512_lf.tex, sky512_rt.tex, and sky512_up.tex. Save settings to apply it.">
+            <StackPanel>
+                <ui:Button Icon="FolderAdd16" Content="Choose skybox folder" Command="{Binding ManageSkyboxCommand}" Visibility="{Binding ChooseSkyboxVisibility, Mode=OneWay}" />
+                <ui:Button Icon="FolderOpen16" Content="Open current skybox folder" Command="{Binding OpenSkyboxFolderCommand}" Visibility="{Binding OpenSkyboxFolderVisibility, Mode=OneWay}" Margin="0,8,0,0" />
+                <ui:Button Icon="Delete16" Content="Remove custom skybox" Appearance="Danger" Command="{Binding ManageSkyboxCommand}" Visibility="{Binding DeleteSkyboxVisibility, Mode=OneWay}" Margin="0,8,0,0" />
+            </StackPanel>
+        </controls:OptionControl>
     </StackPanel>
 </ui:UiPage>
