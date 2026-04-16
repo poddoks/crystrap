@@ -12,8 +12,6 @@ using Bloxstrap.Integrations;
 using Bloxstrap.Models;
 using Bloxstrap.UI.Elements.Dialogs;
 
-using Wpf.Ui.Mvvm.Contracts;
-
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
     public partial class NvidiaFFlagEditorPage : INotifyPropertyChanged
@@ -246,8 +244,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void BackButton(object sender, RoutedEventArgs e)
         {
-            if (Window.GetWindow(this) is INavigationWindow window)
-                window.Navigate(typeof(NvidiaFastFlagsPage));
+            NavigationService?.Navigate(new NvidiaFastFlagsPage());
         }
 
         private void SaveEntries()

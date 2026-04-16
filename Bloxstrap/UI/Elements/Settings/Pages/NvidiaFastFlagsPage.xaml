@@ -62,6 +62,14 @@
                     <ui:ToggleSwitch IsChecked="{Binding EnableGamma}" />
                 </controls:OptionControl>
 
+                <controls:OptionControl Header="DLSS Super Resolution" Description="Enables the NVIDIA DLSS Super Resolution override flag for supported GPUs and driver paths.">
+                    <ui:ToggleSwitch IsChecked="{Binding EnableDlssSuperResolution}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl Header="DLSS Frame Generation" Description="Enables the NVIDIA DLSS Frame Generation override flag for supported GPUs and driver paths.">
+                    <ui:ToggleSwitch IsChecked="{Binding EnableDlssFrameGen}" />
+                </controls:OptionControl>
+
                 <controls:OptionControl Header="Benchmark Overlay" Description="Displays NVIDIA driver-level performance overlays such as FPS graphs and present timing data.">
                     <ComboBox Width="220" ItemsSource="{Binding BenchMarkOverlayModes}" SelectedItem="{Binding BenchMarkOverlayMode}" />
                 </controls:OptionControl>

@@ -28,6 +28,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
         private string _selectedSilkSmoothness = "Off";
         private bool _enableRbar;
         private bool _enableGamma;
+        private bool _enableDlssSuperResolution;
+        private bool _enableDlssFrameGen;
         private bool _enableMFAA;
         private bool _enableFXAA;
         private int _textureLodBias;
@@ -74,6 +76,18 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => _enableGamma;
             set => Set(ref _enableGamma, value);
+        }
+
+        public bool EnableDlssSuperResolution
+        {
+            get => _enableDlssSuperResolution;
+            set => Set(ref _enableDlssSuperResolution, value);
+        }
+
+        public bool EnableDlssFrameGen
+        {
+            get => _enableDlssFrameGen;
+            set => Set(ref _enableDlssFrameGen, value);
         }
 
         public bool EnableMFAA
@@ -131,6 +145,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
             ApplyIfChanged(entries, "FRL Low Latency Mode", "277041152", FrlLowLatencyModes.IndexOf(SelectedFrlLowLatencyMode).ToString());
             ApplyIfChanged(entries, "SILK Smoothness", "9990737", SilkToValue(SelectedSilkSmoothness));
             ApplyIfChanged(entries, "Resizable BAR", "549198379", EnableRbar ? "1" : "0");
+            ApplyIfChanged(entries, "Enable DLSS-SR override", "283385345", EnableDlssSuperResolution ? "1" : "0");
+            ApplyIfChanged(entries, "Enable DLSS-FG override", "283385347", EnableDlssFrameGen ? "1" : "0");
 
             string gammaValue = EnableGamma ? "0" : "1";
             ApplyIfChanged(entries, "Gamma correction", "276652957", gammaValue);
@@ -164,6 +180,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
             SelectedFrlLowLatencyMode = ReadEnum(entries, "277041152", FrlLowLatencyModes, 0);
             SelectedSilkSmoothness = ReadSilk(entries);
             EnableRbar = ReadBool(entries, "549198379");
+            EnableDlssSuperResolution = ReadBool(entries, "283385345");
+            EnableDlssFrameGen = ReadBool(entries, "283385347");
             FrameRateLimit = ReadInt(entries, "277041154", 0);
             BackgroundFrameRateLimit = ReadInt(entries, "277041157", 0);
             EnableMFAA = ReadBool(entries, "10011052");

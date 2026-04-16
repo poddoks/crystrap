@@ -2,8 +2,6 @@ using System.Windows;
 
 using Bloxstrap.UI.ViewModels.Settings;
 
-using Wpf.Ui.Mvvm.Contracts;
-
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
     public partial class NvidiaFastFlagsPage
@@ -19,8 +17,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void OpenRawEditor_Click(object sender, RoutedEventArgs e)
         {
-            if (Window.GetWindow(this) is INavigationWindow window)
-                window.Navigate(typeof(NvidiaFFlagEditorPage));
+            NavigationService?.Navigate(new NvidiaFFlagEditorPage());
         }
 
         private async void Apply_Click(object sender, RoutedEventArgs e)
@@ -30,8 +27,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void OpenFastFlagSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (Window.GetWindow(this) is INavigationWindow window)
-                window.Navigate(typeof(FastFlagsPage));
+            NavigationService?.Navigate(new FastFlagsPage());
         }
     }
 }
