@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Security.Cryptography;
+using System.IO.Compression;
 using System.Windows;
 using System.Windows.Shell;
 using System.Windows.Threading;
@@ -140,6 +141,14 @@ namespace Bloxstrap
             Terminate(ErrorCode.ERROR_INSTALL_FAILURE);
         }
 
+        private static bool IsReleaseInstallable(GithubRelease releaseInfo)
+        {
+            if (releaseInfo.Draft || releaseInfo.Prerelease)
+                return false;
+
+            return GetLatestReleaseAsset(releaseInfo) is not null;
+        }
+
         public static async Task<GithubRelease?> GetLatestRelease()
         {
             const string LOG_IDENT = "App::GetLatestRelease";
@@ -148,13 +157,35 @@ namespace Bloxstrap
             {
                 var releaseInfo = await Http.GetJson<GithubRelease>($"https://api.github.com/repos/{ProjectRepository}/releases/latest");
 
-                if (releaseInfo is null || releaseInfo.Assets is null)
+                if (releaseInfo is null)
                 {
                     Logger.WriteLine(LOG_IDENT, "Encountered invalid data");
                     return null;
                 }
 
-                return releaseInfo;
+                if (IsReleaseInstallable(releaseInfo))
+                    return releaseInfo;
+
+                Logger.WriteLine(LOG_IDENT, $"Latest published release {releaseInfo.TagName} is not installable; searching for the newest release with a downloadable asset");
+
+                var releases = await Http.GetJson<List<GithubRelease>>($"https://api.github.com/repos/{ProjectRepository}/releases");
+
+                if (releases is null)
+                {
+                    Logger.WriteLine(LOG_IDENT, "Could not enumerate releases");
+                    return null;
+                }
+
+                foreach (var candidate in releases)
+                {
+                    if (!IsReleaseInstallable(candidate))
+                        continue;
+
+                    Logger.WriteLine(LOG_IDENT, $"Selected installable release {candidate.TagName}");
+                    return candidate;
+                }
+
+                Logger.WriteLine(LOG_IDENT, "No installable releases were found");
             }
             catch (Exception ex)
             {
@@ -187,6 +218,41 @@ namespace Bloxstrap
             // Keep the original executable name so runtime sync replaces Paths.Application correctly.
             // Version isolation is handled by putting each payload under its own tag-named directory.
             return Path.Combine(Paths.TempUpdates, safeTag, assetName);
+        }
+
+        private static string BuildVersionedUpdateExtractionPath(string releaseTag)
+        {
+            string safeTag = new(
+                releaseTag
+                    .Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch)
+                    .ToArray()
+            );
+
+            return Path.Combine(Paths.TempUpdates, safeTag, "extracted");
+        }
+
+        private static string ResolveDownloadedUpdateLaunchPath(string payloadPath, GithubReleaseAsset asset, string releaseTag)
+        {
+            if (asset.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            {
+                string extractDirectory = BuildVersionedUpdateExtractionPath(releaseTag);
+
+                if (Directory.Exists(extractDirectory))
+                    Directory.Delete(extractDirectory, true);
+
+                ZipFile.ExtractToDirectory(payloadPath, extractDirectory, true);
+
+                string? extractedExecutable =
+                    Directory.GetFiles(extractDirectory, ProjectReleaseAssetName, SearchOption.AllDirectories).FirstOrDefault()
+                    ?? Directory.GetFiles(extractDirectory, "*.exe", SearchOption.AllDirectories).FirstOrDefault();
+
+                if (extractedExecutable is null)
+                    throw new InvalidOperationException("Downloaded update archive does not contain a runnable executable.");
+
+                return extractedExecutable;
+            }
+
+            return payloadPath;
         }
 
         public static async Task<bool> CheckForUpdatesAsync(LaunchMode launchMode = LaunchMode.None, IBootstrapperDialog? dialog = null)
@@ -273,11 +339,13 @@ namespace Bloxstrap
                     await response.Content.CopyToAsync(fileStream);
                 }
 
-                Logger.WriteLine(LOG_IDENT, $"Starting {version}...");
+                string launchPath = ResolveDownloadedUpdateLaunchPath(downloadLocation, asset, releaseInfo.TagName);
+
+                Logger.WriteLine(LOG_IDENT, $"Starting {version} from {launchPath}...");
 
                 ProcessStartInfo startInfo = new()
                 {
-                    FileName = downloadLocation,
+                    FileName = launchPath,
                 };
 
                 startInfo.ArgumentList.Add("-upgrade");

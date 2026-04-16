@@ -35,23 +35,6 @@
             <ui:ToggleSwitch IsChecked="{Binding ResetConfiguration, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <TextBlock Text="{x:Static resources:Strings.Common_Presets}" FontSize="20" FontWeight="Medium" Margin="0,16,0,0" />
-
-        <controls:OptionControl Header="Preset fast flags" Description="Apply one of the bundled performance presets from a compact dropdown instead of the large buttons in the Optimizations tab.">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="220" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
-                    <ComboBox Tag="PresetFastFlags" Margin="5,0,8,0" Padding="10,5,10,5" Width="200" SelectionChanged="PresetComboBox_SelectionChanged" />
-                    <ui:Button Margin="0,0,8,0" Content="Apply" Appearance="Secondary" Click="ApplyPresetButton_Click" />
-                    <ui:Button Tag="CustomPresetAction" Content="Save Current" Appearance="Secondary" Click="CustomPresetActionButton_Click" />
-                </StackPanel>
-            </Grid>
-        </controls:OptionControl>
-
         <TextBlock Text="{x:Static resources:Strings.Common_Geometry}" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
         <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding Path=MeshQualityEnabled, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
             <ui:CardExpander.Header>

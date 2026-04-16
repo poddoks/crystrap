@@ -19,6 +19,39 @@
 
     <StackPanel Margin="0,0,14,14">
         <controls:MarkdownTextBlock FontSize="14" MarkdownText="{Binding MainText, Mode=OneWay}" TextWrapping="Wrap" />
+        <TextBlock Margin="0,16,0,0" FontSize="14" TextWrapping="Wrap">
+            You can use the following links to view everything about Crystrap:
+        </TextBlock>
+
+        <TextBlock Margin="0,8,0,0" FontSize="14" TextWrapping="Wrap">
+            <Hyperlink NavigateUri="https://github.com/poddoks/crystrap" RequestNavigate="Hyperlink_RequestNavigate">
+                Crystrap Repository
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Margin="0,4,0,0" FontSize="14" TextWrapping="Wrap">
+            <Hyperlink NavigateUri="https://github.com/poddoks/crystrap/releases" RequestNavigate="Hyperlink_RequestNavigate">
+                Releases
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Margin="0,4,0,0" FontSize="14" TextWrapping="Wrap">
+            <Hyperlink NavigateUri="https://github.com/poddoks/crystrap/issues" RequestNavigate="Hyperlink_RequestNavigate">
+                Issues and Support
+            </Hyperlink>
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
+            <ui:Button Content="Releases"
+                       Icon="ArrowDownload24"
+                       Margin="0,0,8,0"
+                       Click="ReleasesButton_Click" />
+
+            <ui:Button Content="Issues"
+                       Icon="ChatHelp24"
+                       Click="IssuesButton_Click" />
+        </StackPanel>
+
         <StackPanel>
             <StackPanel.Style>
                 <Style TargetType="StackPanel">

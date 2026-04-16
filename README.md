@@ -22,6 +22,11 @@
 
 **Download the latest release [here][repo-latest]**
 
+## Licensing and signed releases
+- Crystrap is licensed under the [MIT License][repo-license].
+- The app already exposes this in its About and Licenses screens.
+- Official releases can also be Authenticode-signed once a Windows code signing certificate is added to the GitHub Actions secrets described in [docs/CodeSigning.md](docs/CodeSigning.md).
+
 ## Feature List
 - Competitive-first Roblox optimization focus
 - Aggressive fast flag presets for maximum FPS and minimum delay

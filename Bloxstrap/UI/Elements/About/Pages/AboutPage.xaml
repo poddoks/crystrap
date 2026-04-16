@@ -56,6 +56,55 @@
             <ui:Button Grid.Column="1" Width="210" Margin="6,0,0,0" Content="{x:Static resources:Strings.Uninstaller_Title}" Command="{Binding LaunchUninstallerCommand}" />
         </Grid>
 
+        <TextBlock Text="License and Trust" FontWeight="Medium" FontSize="20" Margin="0,16,0,0" />
+        <TextBlock Text="Crystrap is MIT-licensed. Official signed releases can be published once a code signing certificate is configured in the release pipeline." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+
+        <Grid Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <ui:CardAction Grid.Column="0" Margin="0,0,8,0" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding ProjectRepositoryUrl, Mode=OneTime}">
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Repository" />
+                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="View the source code on GitHub." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </ui:CardAction>
+
+            <ui:CardAction Grid.Column="1" Margin="0,0,8,0" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding ProjectLicenseUrl, Mode=OneTime}">
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="{Binding LicenseName, Mode=OneTime}" />
+                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="{Binding LicenseSummary, Mode=OneTime}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </ui:CardAction>
+
+            <ui:CardAction Grid.Column="2" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding ProjectReleasesUrl, Mode=OneTime}">
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Official Releases" />
+                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="Check the latest published builds and release notes." TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </ui:CardAction>
+        </Grid>
+
+        <Grid Margin="0,8,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Authenticode" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Text="{Binding SignatureStatus, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Publisher" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Text="{Binding SignaturePublisher, Mode=OneTime}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+        </Grid>
+
         <StackPanel Visibility="{Binding BuildInformationVisibility, Mode=OneTime}">
             <TextBlock Text="Build Information" FontWeight="Medium" FontSize="20" Margin="0,16,0,0" />
 

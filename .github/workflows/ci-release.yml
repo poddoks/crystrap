@@ -21,6 +21,23 @@ jobs:
     - name: Publish
       run: dotnet publish -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained true .\Bloxstrap\Bloxstrap.csproj
 
+    - name: Sign published executable
+      if: ${{ secrets.WINDOWS_CERTIFICATE_PFX != '' && secrets.WINDOWS_CERTIFICATE_PASSWORD != '' }}
+      shell: pwsh
+      env:
+        SIGN_CERT_BASE64: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
+        SIGN_CERT_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+      run: .\Scripts\sign-release.ps1 -CertificateBase64 $env:SIGN_CERT_BASE64 -CertificatePassword $env:SIGN_CERT_PASSWORD -FilePath ".\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe"
+
+    - name: Verify Authenticode signature
+      if: ${{ secrets.WINDOWS_CERTIFICATE_PFX != '' && secrets.WINDOWS_CERTIFICATE_PASSWORD != '' }}
+      shell: pwsh
+      run: |
+        $signature = Get-AuthenticodeSignature ".\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe"
+        if ($signature.Status -ne 'Valid') {
+          throw "Authenticode verification failed: $($signature.Status)"
+        }
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:

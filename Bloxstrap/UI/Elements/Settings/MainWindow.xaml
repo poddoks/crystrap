@@ -57,6 +57,7 @@
                     <ui:NavigationItem Content="{x:Static resources:Strings.Common_Deployment}" PageType="{x:Type pages:ChannelPage}" Icon="CloudArchive20" Tag="channel" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Mods_Title}" PageType="{x:Type pages:ModsPage}" Icon="WrenchScrewdriver20" Tag="mods" />
                     <ui:NavigationItem x:Name="fastflags" Content="{x:Static resources:Strings.Menu_FastFlags_Title}" PageType="{x:Type pages:FastFlagsPage}" Icon="Flag24" Tag="fastflags" />
+                    <ui:NavigationItem Content="NVIDIA FastFlags" PageType="{x:Type pages:NvidiaFastFlagsPage}" Icon="Video24" Tag="nvidiafastflags" />
                     <ui:NavigationItem x:Name="gbs" Content="Optimizations" PageType="{x:Type pages:GlobalSettingsPage}" Icon="Settings20" Tag="optimizations"/>
 
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_FastFlagEditor_Title}" PageType="{x:Type pages:FastFlagEditorPage}" Tag="fastflageditor" Visibility="Collapsed" />

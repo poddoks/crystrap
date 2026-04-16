@@ -26,6 +26,12 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             DataContext = _viewModel;
         }
 
+        private void OpenNvidiaFastFlags_Click(object sender, RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is INavigationWindow window)
+                window.Navigate(typeof(NvidiaFastFlagsPage));
+        }
+
         private void ValidateUInt32(object sender, TextCompositionEventArgs e) => e.Handled = !UInt32.TryParse(e.Text, out uint _);
         private void ValidateFloat(object sender, TextCompositionEventArgs e) => e.Handled = !Regex.IsMatch(e.Text, @"^\d*\.?\d*$");
     }
