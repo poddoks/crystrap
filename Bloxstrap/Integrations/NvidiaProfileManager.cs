@@ -12,18 +12,20 @@ namespace Bloxstrap.Integrations
     {
         private const string NvidiaInspectorUrl =
             "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/2.4.0.34/nvidiaProfileInspector.zip";
+        private const string NvidiaProfileName = "Roblox VR";
+        private const string NvidiaExecutableName = "robloxplayerbeta.exe";
 
         private static readonly string InspectorDir = Path.Combine(Paths.Integrations, "Nvidia");
         private static readonly string InspectorExe = Path.Combine(InspectorDir, "nvidiaProfileInspector.exe");
         private static readonly Encoding Utf16Bom = new UnicodeEncoding(false, true);
 
         public static string EmptyNipTemplate() =>
-@"<?xml version=""1.0"" encoding=""utf-16""?>
+$@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfProfile>
   <Profile>
-    <ProfileName>Crystrap</ProfileName>
+    <ProfileName>{NvidiaProfileName}</ProfileName>
     <Executeables>
-      <string>robloxplayerbeta.exe</string>
+      <string>{NvidiaExecutableName}</string>
     </Executeables>
     <Settings>
     </Settings>
@@ -64,8 +66,8 @@ namespace Bloxstrap.Integrations
                     "ArrayOfProfile",
                     new XElement(
                         "Profile",
-                        new XElement("ProfileName", "Crystrap"),
-                        new XElement("Executeables", new XElement("string", "robloxplayerbeta.exe")),
+                        new XElement("ProfileName", NvidiaProfileName),
+                        new XElement("Executeables", new XElement("string", NvidiaExecutableName)),
                         settings
                     )
                 )
