@@ -385,6 +385,13 @@ namespace Bloxstrap
             if (launchMode == LaunchMode.None)
                 throw new InvalidOperationException("No Roblox launch mode set");
 
+            if (launchMode == LaunchMode.Player && string.IsNullOrWhiteSpace(App.LaunchSettings.RobloxLaunchArgs))
+            {
+                App.Logger.WriteLine(LOG_IDENT, "No Roblox launch arguments were provided, using clean stock player launch");
+                LaunchPureRoblox();
+                return;
+            }
+
             if (!File.Exists(Path.Combine(Paths.System, "mfplat.dll")))
             {
                 Frontend.ShowMessageBox(Strings.Bootstrapper_WMFNotFound, MessageBoxImage.Error);
