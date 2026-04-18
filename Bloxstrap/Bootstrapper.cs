@@ -63,7 +63,7 @@ namespace Bloxstrap
         private long _totalDownloadedBytes = 0;
         private bool _packageExtractionSuccess = true;
 
-        private bool _mustUpgrade => App.LaunchSettings.ForceFlag.Active || App.State.Prop.ForceReinstall || String.IsNullOrEmpty(AppData.State.VersionGuid) || !IsInstalledAndHealthy();
+        private bool _mustUpgrade => App.LaunchSettings.ForceFlag.Active || App.State.Prop.ForceReinstall || String.IsNullOrEmpty(AppData.State.VersionGuid) || !File.Exists(AppData.ExecutablePath);
         private bool _noConnection = false;
 
         private AsyncMutex? _mutex;
@@ -389,7 +389,7 @@ namespace Bloxstrap
             if (IsStudioLaunch)
                 throw new InvalidOperationException("Pure launch is only supported for Roblox Player");
 
-            if (String.IsNullOrEmpty(AppData.State.VersionGuid) || !IsInstalledAndHealthy())
+            if (String.IsNullOrEmpty(AppData.State.VersionGuid) || !File.Exists(AppData.ExecutablePath))
             {
                 App.Logger.WriteLine(LOG_IDENT, "No installed Roblox player was found to launch cleanly");
                 return false;
