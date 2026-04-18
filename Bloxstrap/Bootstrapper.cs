@@ -1583,6 +1583,26 @@ namespace Bloxstrap
             success &= await SyncPerformanceStripTargetsAsync();
             success &= await SyncDisableAppPatchAsync();
 
+            if (!App.Settings.Prop.UseFastFlagManager)
+            {
+                string clientSettingsPath = Path.Combine(_latestVersionDirectory, "ClientSettings", "ClientAppSettings.json");
+
+                if (File.Exists(clientSettingsPath))
+                {
+                    try
+                    {
+                        File.Delete(clientSettingsPath);
+                        App.Logger.WriteLine(LOG_IDENT, "Removed stale ClientAppSettings.json because Crystrap FastFlag management is disabled");
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, "Failed to remove stale ClientAppSettings.json");
+                        App.Logger.WriteException(LOG_IDENT, ex);
+                        success = false;
+                    }
+                }
+            }
+
             foreach (string file in Directory.GetFiles(Paths.Modifications, "*.*", SearchOption.AllDirectories))
             {
                 if (_cancelTokenSource.IsCancellationRequested)
