@@ -33,7 +33,7 @@ namespace Bloxstrap.Models.Persistable
         public string ChannelHash { get; set; } = "";
         public string DownloadingStringFormat { get; set; } = Strings.Bootstrapper_Status_Downloading + " {0} - {1}MB / {2}MB";
         public string? SelectedCustomTheme { get; set; } = null;
-        public string LastSelectedFastFlagPreset { get; set; } = "Ultra Low Delay";
+        public string LastSelectedFastFlagPreset { get; set; } = "";
         public Dictionary<string, CustomFastFlagPreset> CustomFastFlagPresets { get; set; } = new();
         public bool BackgroundUpdatesEnabled { get; set; } = false;
         public bool DebugDisableVersionPackageCleanup { get; set; } = false;

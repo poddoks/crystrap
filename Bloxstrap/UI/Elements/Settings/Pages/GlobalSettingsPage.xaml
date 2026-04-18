@@ -30,6 +30,12 @@
             <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding UseFastFlagManager}" />
         </controls:OptionControl>
 
+        <TextBlock Text="Recovery" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
+
+        <controls:OptionControl Header="Refresh settings and reinstall Roblox" Description="Clears Crystrap-managed FastFlags, resets optimization-related settings, removes the Crystrap NVIDIA profile, wipes Crystrap-managed Roblox modifications, and launches a forced Roblox reinstall. Use this when Roblox starts crashing after applying tweaks.">
+            <ui:Button Margin="5,0,0,0" Padding="12,6,12,6" Content="Run Recovery Reset" Icon="ArrowReset24" Click="RunRecoveryReset_Click" />
+        </controls:OptionControl>
+
         <TextBlock Text="Latency" FontSize="16" FontWeight="Medium" Margin="0,16,0,0" />
 
         <controls:OptionControl Header="Framerate limit" Description="Higher FPS can reduce input delay. 240 is a strong high-performance target without going fully uncapped.">
@@ -211,7 +217,6 @@
         <ui:CardAction Margin="0,8,0,0" Icon="Video24" Click="OpenNvidiaFastFlags_Click">
             <StackPanel>
                 <TextBlock FontSize="14" Text="NVIDIA FastFlags" />
-                <TextBlock Margin="0,2,0,0" FontSize="12" Text="Open the NVIDIA driver profile editor ported from Voidstrap. It uses a Crystrap-managed .nip profile and applies changes through nvidiaProfileInspector automatically." TextWrapping="Wrap" />
             </StackPanel>
         </ui:CardAction>
     </StackPanel>
