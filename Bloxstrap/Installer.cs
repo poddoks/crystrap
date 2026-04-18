@@ -248,11 +248,13 @@ namespace Bloxstrap
 
                 try
                 {
-                    SyncRuntimeFiles(Path.GetDirectoryName(Paths.Process)!, Paths.Base);
+                    // Install from the published single-file payload the same way Fishstrap does.
+                    // Upgrade flows still use runtime sync so updater behavior remains unchanged.
+                    File.Copy(Paths.Process, Paths.Application, true);
                 }
                 catch (Exception ex)
                 {
-                    App.Logger.WriteLine(LOG_IDENT, "Could not copy runtime files");
+                    App.Logger.WriteLine(LOG_IDENT, "Could not overwrite executable");
                     App.Logger.WriteException(LOG_IDENT, ex);
 
                     Frontend.ShowMessageBox(Strings.Installer_Install_CannotOverwrite, MessageBoxImage.Error);
