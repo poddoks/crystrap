@@ -47,7 +47,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/') && !startsWith(github.ref, 'refs/tags/release-test')
     permissions:
       contents: write
 
