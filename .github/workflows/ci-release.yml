@@ -21,6 +21,18 @@ jobs:
     - name: Publish
       run: dotnet publish -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained true .\Bloxstrap\Bloxstrap.csproj
 
+    - name: Verify published version matches tag
+      if: startsWith(github.ref, 'refs/tags/') && !startsWith(github.ref, 'refs/tags/release-test')
+      shell: pwsh
+      run: |
+        $expectedVersion = "${{ github.ref_name }}"
+        $publishedFile = ".\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\Crystrap.exe"
+        $actualVersion = (Get-Item $publishedFile).VersionInfo.ProductVersion
+
+        if ($actualVersion -ne $expectedVersion) {
+          throw "Published executable version mismatch. Expected $expectedVersion but found $actualVersion."
+        }
+
     - name: Sign published executable
       if: ${{ secrets.WINDOWS_CERTIFICATE_PFX != '' && secrets.WINDOWS_CERTIFICATE_PASSWORD != '' }}
       shell: pwsh
